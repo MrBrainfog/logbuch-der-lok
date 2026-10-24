@@ -1,0 +1,17 @@
+{
+  "name": "Logbuch der Lok",
+  "short_name": "Lok",
+  "description": "Spielleiter-App für eine Blitzbahn-Kampagne in Khorvaire",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0e1716",
+  "theme_color": "#152220",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+    {"src": "icon.svg", "sizes": "any", "type": "image/svg+xml"}
+  ]
+}

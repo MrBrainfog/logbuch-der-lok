@@ -1,0 +1,1293 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#152220">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<script>window.LOK_OFFLINE=true;window.LOK_VERSION="2026.10.24-0943";</script>
+</head><body>
+<title>Logbuch der Lok</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@1&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: Logbuch der Lok – feste Kopfleiste wie ein Waggonschild, Reiter als Abteile, Leinwand als Bahnhofstafel. Farben aus der Khorvaire-Karte: Meeresgrün, Oliv, Pergament, Schienenkupfer, Leitstein-Blau. */
+:root{
+  --bg:#0e1716; --surface:#152220; --surface-2:#1c2c2a; --line:#2a3b38; --line-strong:#41574f;
+  --fg:#ebe0c6; --fg-dim:#b3a98f; --fg-faint:#827c69;
+  --brass:#d39a4f; --brass-ink:#1a1006; --brass-soft:rgba(211,154,79,.15);
+  --blood:#e0675a; --blood-soft:rgba(224,103,90,.15);
+  --moss:#9cb86f; --moss-soft:rgba(156,184,111,.15);
+  --arcane:#6cc8dc; --arcane-soft:rgba(108,200,220,.14);
+  --shadow:0 10px 30px rgba(0,0,0,.4);
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .45 0 0 0 0 .35 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --f-display:"IM Fell English SC", "Iowan Old Style", Georgia, serif;
+  --f-italic:"IM Fell English", Georgia, serif;
+  --f-body:"Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --r:5px;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+  --bg:#e7ddc4; --surface:#f2ead5; --surface-2:#e0d3b5; --line:#cbbc99; --line-strong:#a6957a;
+  --fg:#26211a; --fg-dim:#584f3e; --fg-faint:#867b66;
+  --brass:#8f5b1d; --brass-ink:#fff8ec; --brass-soft:rgba(143,91,29,.12);
+  --blood:#a63a2b; --blood-soft:rgba(166,58,43,.1);
+  --moss:#4e6c2a; --moss-soft:rgba(78,108,42,.12);
+  --arcane:#1d6c7e; --arcane-soft:rgba(29,108,126,.1);
+  --shadow:0 10px 30px rgba(60,45,20,.15);
+  color-scheme:light;
+}}
+:root[data-theme="light"]{
+  --bg:#e7ddc4; --surface:#f2ead5; --surface-2:#e0d3b5; --line:#cbbc99; --line-strong:#a6957a;
+  --fg:#26211a; --fg-dim:#584f3e; --fg-faint:#867b66;
+  --brass:#8f5b1d; --brass-ink:#fff8ec; --brass-soft:rgba(143,91,29,.12);
+  --blood:#a63a2b; --blood-soft:rgba(166,58,43,.1);
+  --moss:#4e6c2a; --moss-soft:rgba(78,108,42,.12);
+  --arcane:#1d6c7e; --arcane-soft:rgba(29,108,126,.1);
+  --shadow:0 10px 30px rgba(60,45,20,.15);
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background-color:var(--bg);background-image:var(--grain);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.45}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.num,.mono{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--f-mono);font-size:.86em}
+
+/* ---------- Kopfleiste ---------- */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface) var(--grain);border-bottom:3px double var(--line-strong);box-shadow:0 1px 0 var(--brass-soft);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:400;font-size:1.55rem;letter-spacing:.02em;color:var(--brass);line-height:1;display:flex;align-items:center;gap:8px}
+.brand svg{width:30px;height:30px;color:var(--arcane);filter:drop-shadow(0 0 4px var(--arcane-soft))}
+.brand small{display:block;font-family:var(--f-italic);font-style:italic;font-size:.72rem;color:var(--fg-faint);letter-spacing:0;margin-top:3px}
+.tabs{display:flex;gap:2px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none}
+.tab{background:none;border:0;padding:8px 12px;border-radius:var(--r);color:var(--fg-dim);cursor:pointer;white-space:nowrap;font-weight:500}
+.tab:hover{color:var(--fg);background:var(--surface-2)}
+.tab[aria-selected="true"]{color:var(--fg);background:var(--surface-2);box-shadow:inset 0 -2px 0 var(--brass),0 2px 10px -6px var(--arcane)}
+.top-right{display:flex;align-items:center;gap:10px}
+.sync{font-size:.78rem;color:var(--fg-faint);display:flex;align-items:center;gap:6px;letter-spacing:.02em}
+.sync i{width:7px;height:7px;border-radius:50%;background:var(--fg-faint);display:inline-block}
+.sync.ok i{background:var(--moss)}
+.sync.local i{background:var(--brass)}
+
+/* ---------- Grundbausteine ---------- */
+main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 60px;max-width:1400px;margin:0 auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line-strong);background:var(--surface-2);padding:6px 12px;border-radius:var(--r);cursor:pointer;font-weight:500;line-height:1.2;white-space:nowrap}
+.btn:hover{border-color:var(--brass)}
+.btn.primary{background:var(--brass);border-color:var(--brass);color:var(--brass-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{background:none;border-color:transparent;color:var(--fg-dim)}
+.btn.ghost:hover{color:var(--fg);border-color:var(--line)}
+.btn.danger{color:var(--blood)}
+.btn.danger.armed{background:var(--blood);color:#fff;border-color:var(--blood)}
+.btn.sm{padding:3px 8px;font-size:.85rem}
+.btn[aria-pressed="true"]{background:var(--brass-soft);border-color:var(--brass);color:var(--fg)}
+input[type=text],input[type=number],input:not([type]),select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:5px 7px;width:100%;min-width:0}
+input:hover,select:hover,textarea:hover{border-color:var(--line-strong)}
+input:focus,select:focus,textarea:focus{border-color:var(--brass);outline:none}
+textarea{resize:vertical;min-height:90px;line-height:1.5}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{opacity:.4}
+.label{font-size:.7rem;text-transform:uppercase;letter-spacing:.09em;color:var(--fg-faint);font-weight:700}
+h2.sec{font-family:var(--f-display);font-weight:400;font-size:1.28rem;margin:0;letter-spacing:.01em;color:var(--fg)}
+.panel{background:var(--surface) var(--grain);border:1px solid var(--line);border-radius:6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.015),0 1px 0 rgba(0,0,0,.18)}
+.muted{color:var(--fg-dim)}
+.faint{color:var(--fg-faint)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+.view[hidden]{display:none!important}
+.empty{padding:36px 20px;text-align:center;color:var(--fg-dim)}
+.empty h3{font-family:var(--f-display);font-weight:600;font-size:1.3rem;color:var(--fg);margin:0 0 6px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:.78rem;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);cursor:pointer;color:var(--fg-dim)}
+.chip.on{border-color:var(--blood);background:var(--blood-soft);color:var(--fg)}
+.chip.static{cursor:default}
+
+/* ---------- Charaktere ---------- */
+.split{display:grid;grid-template-columns:290px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.split{grid-template-columns:minmax(0,1fr)}}
+.list{display:flex;flex-direction:column;gap:6px}
+.list-head{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.citem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;text-align:left;width:100%}
+.citem:hover{border-color:var(--line-strong)}
+.citem[aria-current="true"]{border-color:var(--brass);background:var(--brass-soft)}
+.citem .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.citem .s{font-size:.82rem;color:var(--fg-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.citem .ac{grid-row:1/3;grid-column:2;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.68rem;color:var(--fg-faint);letter-spacing:.06em}
+.citem .ac b{font-size:1.05rem;color:var(--fg);letter-spacing:0}
+.hpbar{grid-column:1/3;height:4px;border-radius:2px;background:var(--surface-2);overflow:hidden;margin-top:6px}
+.hpbar i{display:block;height:100%;background:var(--moss)}
+.hpbar i.mid{background:var(--brass)} .hpbar i.low{background:var(--blood)}
+.tag{font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--arcane);margin-left:6px}
+
+.sheet{padding:18px;display:flex;flex-direction:column;gap:18px}
+.sheet-head{display:grid;grid-template-columns:minmax(0,2fr) repeat(4,minmax(0,1fr));gap:10px}
+.sheet-head .name input{font-family:var(--f-display);font-size:1.6rem;font-weight:600;padding:2px 8px;background:transparent;border-color:transparent}
+.sheet-head .name input:hover{border-color:var(--line)}
+@media (max-width:700px){.sheet-head{grid-template-columns:repeat(2,minmax(0,1fr))}.sheet-head .name{grid-column:1/-1}}
+.field{display:flex;flex-direction:column;gap:3px;min-width:0}
+
+.vitals{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+@media (max-width:900px){.vitals{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.vital{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface-2);text-align:center}
+.vital .big{font-size:1.5rem;font-weight:700;line-height:1.1}
+.vital input{text-align:center;font-size:1.3rem;font-weight:700;padding:1px;background:transparent;border-color:transparent}
+.vital button.big{background:none;border:0;cursor:pointer;padding:0}
+.vital button.big:hover{color:var(--brass)}
+
+.cols3{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,1.15fr);gap:18px}
+@media (max-width:1100px){.cols3{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+@media (max-width:640px){.cols3{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.block{display:flex;flex-direction:column;gap:8px}
+.block-h{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.block-h .label{color:var(--brass)}
+
+.abils{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.abil{border:1px solid var(--line);border-radius:8px;padding:6px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface-2)}
+.abil .label{font-size:.66rem}
+.abil .modb{font-size:1.45rem;font-weight:700;background:none;border:0;cursor:pointer;line-height:1.15;padding:0 6px;border-radius:4px}
+.abil .modb:hover{background:var(--brass-soft);color:var(--brass)}
+.abil input{width:52px;text-align:center;padding:1px 2px;font-size:.9rem}
+
+.checks{display:flex;flex-direction:column}
+.chk{display:grid;grid-template-columns:22px 44px minmax(0,1fr) auto;align-items:center;gap:6px;padding:3px 4px;border-radius:4px}
+.chk:hover{background:var(--surface-2)}
+.pip{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line-strong);background:none;cursor:pointer;padding:0;position:relative}
+.pip[data-v="1"]{background:var(--brass);border-color:var(--brass)}
+.pip[data-v="2"]{background:var(--brass);border-color:var(--brass);box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--brass)}
+.chk .val{background:none;border:0;cursor:pointer;font-weight:700;text-align:right;padding:1px 4px;border-radius:4px;font-variant-numeric:tabular-nums}
+.chk .val:hover{background:var(--brass-soft);color:var(--brass)}
+.chk .ab{font-size:.68rem;color:var(--fg-faint);letter-spacing:.06em}
+
+.hpbox{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.hpquick{display:flex;gap:6px}
+.hpquick input{width:70px;text-align:center}
+.atk{display:grid;grid-template-columns:minmax(0,1.6fr) 60px minmax(0,1fr) auto;gap:6px;align-items:center}
+.atk-head{font-size:.68rem;color:var(--fg-faint);letter-spacing:.06em;text-transform:uppercase}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:6px}
+.slot{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:6px;padding:4px 6px}
+.slot .lv{font-weight:700;width:18px;color:var(--arcane)}
+.slot input{width:38px;text-align:center;padding:1px}
+.slot .gems{display:flex;gap:3px;flex-wrap:wrap}
+.gem{width:12px;height:12px;transform:rotate(45deg);border:1.5px solid var(--arcane);background:var(--arcane);cursor:pointer;padding:0}
+.gem.used{background:none;opacity:.6}
+.money{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.money .field input{text-align:center}
+.deaths{display:flex;gap:14px;flex-wrap:wrap}
+.deaths .row{gap:4px}
+.dbox{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line-strong);background:none;cursor:pointer;padding:0}
+.dbox.s.on{background:var(--moss);border-color:var(--moss)}
+.dbox.f.on{background:var(--blood);border-color:var(--blood)}
+
+/* ---------- Initiative ---------- */
+.init-wrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
+@media (max-width:960px){.init-wrap{grid-template-columns:minmax(0,1fr)}}
+.round{display:flex;align-items:baseline;gap:10px}
+.round .rn{font-family:var(--f-display);font-size:2rem;font-weight:700;color:var(--brass);line-height:1}
+.combatants{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.cbt{display:grid;grid-template-columns:52px minmax(0,1fr) 64px minmax(170px,auto) auto;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);position:relative}
+.cbt.turn{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass) inset;background:linear-gradient(90deg,var(--brass-soft),transparent 60%),var(--surface)}
+.cbt.turn::before{content:"";position:absolute;left:-9px;top:50%;width:0;height:0;border:7px solid transparent;border-left-color:var(--brass);transform:translateY(-50%)}
+.cbt.down{opacity:.55}
+.cbt .ini input{text-align:center;font-weight:700;font-size:1.15rem;padding:3px 2px}
+.cbt .who .n{font-weight:700;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.cbt .who .conds{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+.kind{font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;padding:1px 6px;border-radius:3px}
+.kind.pc{color:var(--moss);background:var(--moss-soft)}
+.kind.npc{color:var(--arcane);background:var(--arcane-soft)}
+.kind.monster{color:var(--blood);background:var(--blood-soft)}
+.cbt .acv{text-align:center;font-size:.68rem;color:var(--fg-faint);letter-spacing:.06em}
+.cbt .acv input{text-align:center;font-weight:700;padding:2px}
+.hpctl{display:flex;flex-direction:column;gap:4px}
+.hpctl .nums{display:flex;align-items:baseline;gap:4px;font-weight:700}
+.hpctl .nums small{color:var(--fg-faint);font-weight:400}
+.hpctl .act{display:flex;gap:4px}
+.hpctl .act input{width:58px;text-align:center;padding:2px}
+.btn.dmg{color:var(--blood)} .btn.heal{color:var(--moss)}
+.cbt .tools{display:flex;gap:2px}
+@media (max-width:700px){.cbt{grid-template-columns:48px minmax(0,1fr) 56px;}.cbt .hpctl{grid-column:1/-1}.cbt .tools{grid-column:1/-1;justify-content:flex-end}}
+.cond-pop{display:flex;flex-wrap:wrap;gap:4px;padding:8px;margin-top:6px;border-top:1px dashed var(--line);grid-column:1/-1}
+.addbox{padding:14px;display:flex;flex-direction:column;gap:12px}
+.mlist{display:flex;flex-direction:column;gap:2px;max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:6px}
+.mrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:5px 8px;font-size:.9rem}
+.mrow:nth-child(odd){background:var(--surface-2)}
+.mrow .st{font-size:.75rem;color:var(--fg-faint)}
+.attrib{font-size:.72rem;color:var(--fg-faint)}
+
+/* ---------- Notizen ---------- */
+.notes-wrap{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.notes-wrap{grid-template-columns:minmax(0,1fr)}}
+.nitem{display:flex;flex-direction:column;gap:2px;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;text-align:left;width:100%}
+.nitem[aria-current="true"]{border-color:var(--brass);background:var(--brass-soft)}
+.nitem .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nitem .p{font-size:.82rem;color:var(--fg-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat{font-size:.64rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--brass)}
+.cats{display:flex;gap:4px;flex-wrap:wrap}
+.cats .chip[aria-pressed="true"]{border-color:var(--brass);background:var(--brass-soft);color:var(--fg)}
+.editor{padding:18px;display:flex;flex-direction:column;gap:12px}
+.editor .title{font-family:var(--f-display);font-size:1.6rem;font-weight:600;background:transparent;border-color:transparent;padding:2px 6px}
+.editor .title:hover{border-color:var(--line)}
+.editor textarea{min-height:46vh;font-size:1rem;max-width:none}
+
+/* ---------- Leinwand-Steuerung ---------- */
+.screen-wrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+@media (max-width:1000px){.screen-wrap{grid-template-columns:minmax(0,1fr)}}
+.now{padding:14px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.now .live{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blood)}
+.now .live i{width:8px;height:8px;border-radius:50%;background:var(--blood);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.now .live i{animation:none}}
+.now .what{font-family:var(--f-display);font-size:1.25rem;font-weight:600}
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.media{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column}
+.media[aria-current="true"]{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass)}
+.media .thumb{aspect-ratio:4/3;background:var(--surface-2) center/cover no-repeat;cursor:pointer;position:relative;max-width:100%}
+.media .thumb .badge{position:absolute;left:6px;top:6px;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(0,0,0,.65);color:#fff}
+.media .thumb .badge.onair{left:auto;right:6px;background:#c0392b}
+.media .meta{padding:6px 8px;display:flex;flex-direction:column;gap:5px}
+.media .meta input{font-size:.85rem;padding:2px 5px}
+.dropzone{border:1.5px dashed var(--line-strong);border-radius:8px;padding:18px;text-align:center;color:var(--fg-dim);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px}
+.dropzone.over{border-color:var(--brass);background:var(--brass-soft)}
+.mapedit{padding:14px;display:flex;flex-direction:column;gap:12px}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.toolbar .sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+.mapview{position:relative;background:#0b0c10;border-radius:6px;overflow:hidden;display:flex;justify-content:center;align-items:center;min-height:200px;touch-action:none}
+.mapbox{position:relative;overflow:hidden;user-select:none;-webkit-user-select:none}
+.mapbox img{display:block;width:100%;height:100%;pointer-events:none}
+.ovl{position:absolute;left:0;top:0}
+.ovl canvas{position:absolute;inset:0;width:100%;height:100%}
+.fog-dm{image-rendering:pixelated;opacity:.62}
+.grid{position:absolute;inset:0;pointer-events:none}
+.token{position:absolute;transform:translate(-50%,-50%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:clamp(9px,1.2vw,16px);border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 6px rgba(0,0,0,.6);text-shadow:0 1px 2px rgba(0,0,0,.8);overflow:hidden;line-height:1;text-align:center}
+.mapbox .token{cursor:grab}
+.token.sel{outline:3px solid var(--brass);outline-offset:2px}
+.token.hid{opacity:.45;border-style:dashed}
+.side{display:flex;flex-direction:column;gap:14px}
+.side .panel{padding:14px;display:flex;flex-direction:column;gap:10px}
+.howto{font-size:.88rem;color:var(--fg-dim);line-height:1.5}
+.howto code{font-family:var(--f-mono);font-size:.82rem;background:var(--surface-2);padding:1px 5px;border-radius:3px;color:var(--fg)}
+.swatches{display:flex;gap:4px;flex-wrap:wrap}
+.sw{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{border-color:var(--fg)}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:.92rem}
+.toggle input{width:auto}
+
+/* ---------- Bibliothek ---------- */
+.lib-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:start}
+@media (max-width:1000px){.lib-wrap{grid-template-columns:minmax(0,1fr)}}
+.searchbar{display:flex;gap:8px}
+.searchbar input{font-size:1.05rem;padding:9px 12px}
+.books{display:flex;flex-direction:column;gap:6px}
+.book{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.book .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.book .s{font-size:.8rem;color:var(--fg-dim)}
+.prog{grid-column:1/-1;height:3px;background:var(--surface-2);border-radius:2px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--arcane)}
+.results{display:flex;flex-direction:column;gap:6px}
+.res{display:flex;flex-direction:column;gap:3px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer;text-align:left;width:100%}
+.res:hover{border-color:var(--line-strong)}
+.res[aria-current="true"]{border-color:var(--brass);background:var(--brass-soft)}
+.res .h{display:flex;gap:8px;align-items:baseline;font-size:.8rem;color:var(--fg-faint)}
+.res .h b{color:var(--arcane);font-weight:700;letter-spacing:.02em}
+.res .x{font-size:.92rem;line-height:1.45;overflow-wrap:anywhere}
+mark{background:var(--brass-soft);color:var(--fg);box-shadow:inset 0 -2px 0 var(--brass);padding:0 1px;border-radius:2px}
+.reader{position:sticky;top:calc(70px + env(safe-area-inset-top,0px));padding:12px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 90px)}
+.reader .pagewrap{overflow:auto;background:#0b0c10;border-radius:6px;min-height:240px;display:flex;justify-content:center;align-items:flex-start}
+.reader canvas{display:block;max-width:none}
+.reader .pg{width:70px;text-align:center}
+.groupcount{font-size:.82rem;color:var(--fg-dim)}
+
+.datapop{position:fixed;z-index:45;right:max(16px,env(safe-area-inset-right,0px));top:calc(72px + env(safe-area-inset-top,0px));width:min(340px,calc(100% - 32px));padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+/* ---------- Würfel ---------- */
+.dice-drawer{position:fixed;right:0;top:0;bottom:0;width:min(340px,100%);background:var(--surface);border-left:1px solid var(--line);z-index:40;display:flex;flex-direction:column;box-shadow:var(--shadow);
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px);transform:translateX(105%);transition:transform .2s ease}
+.dice-drawer.open{transform:none}
+@media (prefers-reduced-motion:reduce){.dice-drawer{transition:none}}
+.dd-head{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.dd-body{padding:14px;display:flex;flex-direction:column;gap:12px;overflow:auto;flex:1}
+.dgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.die{padding:10px 0;font-weight:700;font-family:var(--f-mono)}
+.advs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.log{display:flex;flex-direction:column;gap:6px}
+.lg{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:7px 9px;border-radius:6px;background:var(--surface-2)}
+.lg .l{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lg .t{grid-row:1/3;grid-column:2;font-size:1.4rem;font-weight:700;align-self:center;font-variant-numeric:tabular-nums}
+.lg .d{font-size:.78rem;color:var(--fg-faint);font-family:var(--f-mono);overflow-wrap:anywhere}
+.lg.c20 .t{color:var(--moss)} .lg.c1 .t{color:var(--blood)}
+.rolltoast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;background:var(--surface);border:1px solid var(--brass);border-radius:10px;padding:10px 18px;box-shadow:var(--shadow);display:flex;align-items:center;gap:14px;max-width:calc(100% - 32px)}
+.rolltoast .t{font-family:var(--f-display);font-size:2rem;font-weight:700;color:var(--brass);line-height:1}
+.rolltoast .d{font-size:.8rem;color:var(--fg-faint);font-family:var(--f-mono)}
+.toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:60;background:var(--blood);color:#fff;padding:8px 14px;border-radius:6px;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+
+.empty h3,.round .rn,.now .what,.editor .title,.sheet-head .name input,.rolltoast .t{font-weight:400!important}
+.empty p{max-width:52ch;margin-inline:auto}
+.round .rn{color:var(--arcane);text-shadow:0 0 12px var(--arcane-soft)}
+.cbt.turn{box-shadow:0 0 0 1px var(--brass) inset,0 0 18px -8px var(--arcane)}
+.now .live{color:var(--arcane)} .now .live i{background:var(--arcane);box-shadow:0 0 8px var(--arcane)}
+
+/* ---------- Spieler-Leinwand ---------- */
+#player{position:fixed;inset:0;z-index:100;background:#050507;color:#ece7da;overflow:hidden;font-family:var(--f-body);cursor:default}
+#player.hidecursor{cursor:none}
+.pv-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.pv-title{text-align:center;padding:0 6vw;display:flex;flex-direction:column;gap:2vh;align-items:center}
+.pv-title h1{font-family:var(--f-display);font-weight:400;letter-spacing:.02em;font-size:clamp(40px,8vw,140px);margin:0;line-height:1;color:#e0a85a;text-wrap:balance;text-shadow:0 0 40px rgba(226,194,124,.25)}
+.pv-title p{font-family:var(--f-italic);font-size:clamp(20px,2.6vw,44px);margin:0;color:#c5b99b;font-style:italic;text-wrap:balance}
+.pv-rail{position:relative;width:min(900px,70vw);height:28px;margin:1vh 0}
+.pv-rail::before,.pv-rail::after{content:"";position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#8a6a42 12%,#8a6a42 88%,transparent)}
+.pv-rail::before{top:8px}.pv-rail::after{top:18px}
+.pv-rail i{position:absolute;top:6px;width:16px;height:16px;border-radius:50%;background:#0b1413;border:2px solid #6cc8dc;box-shadow:0 0 14px #6cc8dc;transform:translateX(-50%)}
+.pv-rail i.cur{background:#6cc8dc;animation:glow 2.4s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 30px #6cc8dc}}
+@media (prefers-reduced-motion:reduce){.pv-rail i.cur{animation:none}}
+.pv-kicker{font-family:var(--f-display);color:#6cc8dc;letter-spacing:.3em;font-size:clamp(14px,1.3vw,22px);text-transform:uppercase}
+
+.pv-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(40,70,66,.45),transparent 62%),radial-gradient(ellipse at 50% 120%,rgba(108,200,220,.12),transparent 50%);pointer-events:none}
+#player .pv-stage{background-image:var(--grain)}
+.pv-img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.pv-caption{position:absolute;bottom:3vh;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);padding:.4em 1.1em;border-radius:6px;font-family:var(--f-display);font-size:clamp(18px,2vw,34px);color:#e0a85a;white-space:nowrap}
+.pv-handout{max-width:min(1100px,88vw);max-height:86vh;overflow:auto;background:#1b1a14;border:1px solid #5a4a30;outline:1px solid #2c271c;outline-offset:6px;border-radius:10px;padding:4vh 4vw;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.pv-handout h2{font-family:var(--f-display);font-size:clamp(28px,3.4vw,60px);margin:0 0 .5em;color:#e0a85a;font-weight:400}
+.pv-handout div{font-family:var(--f-italic)!important}
+.pv-handout div{font-size:clamp(17px,1.7vw,30px);line-height:1.55;white-space:pre-wrap;color:#e6e0d1}
+.fog-pv{image-rendering:auto}
+.pv-init{position:absolute;left:2vw;top:3vh;display:flex;flex-direction:column;gap:6px;max-height:90vh;font-size:clamp(14px,1.3vw,24px);pointer-events:none}
+.pv-init .rh{font-family:var(--f-display);color:#e0a85a;font-size:1.2em;margin-bottom:2px;text-shadow:0 2px 6px #000}
+.pv-init .it{display:flex;align-items:center;gap:.6em;background:rgba(10,10,14,.78);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:.35em .7em;min-width:12em;backdrop-filter:blur(3px)}
+.pv-init .it.cur{border-color:#6cc8dc;background:rgba(20,60,62,.88);box-shadow:0 0 16px -4px #6cc8dc}
+.pv-init .it .nm{font-weight:700;flex:1}
+.pv-init .it .st{font-size:.75em;color:#b9b4a6}
+.pv-init .it.dn{opacity:.45;text-decoration:line-through}
+.pv-roll{position:absolute;right:3vw;bottom:5vh;background:rgba(10,10,14,.85);border:1px solid #e0a85a;border-radius:12px;padding:1.2vh 1.6vw;display:flex;align-items:center;gap:1.4vw;font-size:clamp(14px,1.4vw,26px);transition:opacity .4s}
+.pv-roll .tt{font-family:var(--f-display);font-size:3em;font-weight:700;color:#e0a85a;line-height:1}
+.pv-roll.c20 .tt{color:#8fe0a5} .pv-roll.c1 .tt{color:#ff7a70}
+.pv-roll .lb{font-weight:700}
+.pv-roll .dt{font-family:var(--f-mono);font-size:.7em;color:#9b978c}
+.pv-ctl{position:absolute;right:calc(14px + env(safe-area-inset-right,0px));top:calc(14px + env(safe-area-inset-top,0px));display:flex;gap:8px;transition:opacity .3s;z-index:3}
+.pv-ctl button{background:rgba(20,20,26,.8);color:#ddd;border:1px solid #444;border-radius:6px;padding:6px 12px;cursor:pointer;font:inherit}
+.pv-ctl.fade{opacity:0}
+.pv-hint{position:absolute;left:50%;bottom:4vh;transform:translateX(-50%);color:#77736a;font-size:14px;text-align:center}
+</style>
+
+<header class="top" id="topbar">
+  <div class="brand" aria-label="Logbuch der Lok">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="16" r="3.2"/><circle cx="23" cy="16" r="3.2"/><path d="M2 26h28M5 29l2-3M12 29l1-3M19 29l1-3M26 29l1-3"/><path d="M16.8 5 13.5 14h4l-3 9" stroke-width="1.8"/></svg>
+    <span>Logbuch der Lok<small>Unterwegs durch Khorvaire</small></span>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Bereiche">
+    <button class="tab" role="tab" data-tab="chars" aria-selected="true">Charaktere</button>
+    <button class="tab" role="tab" data-tab="init">Initiative</button>
+    <button class="tab" role="tab" data-tab="notes">Notizen</button>
+    <button class="tab" role="tab" data-tab="screen">Leinwand</button>
+    <button class="tab" role="tab" data-tab="lib">Bibliothek</button>
+  </nav>
+  <div class="top-right">
+    <span class="sync" id="sync"><i></i><span>Verbinde …</span></span>
+    <button class="btn ghost" id="dataBtn" aria-expanded="false">Sichern</button>
+    <button class="btn" id="diceBtn" aria-expanded="false">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 21 7.5v9L12 22l-9-5.5v-9z"/><path d="M12 2 6.5 14h11zM3 7.5 6.5 14 3 16.5M21 7.5 17.5 14l3.5 2.5M6.5 14 12 22l5.5-8"/></svg>
+      Würfel
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="view" id="v-chars"></section>
+  <section class="view" id="v-init" hidden></section>
+  <section class="view" id="v-notes" hidden></section>
+  <section class="view" id="v-screen" hidden></section>
+  <section class="view" id="v-lib" hidden></section>
+</main>
+
+<div class="datapop panel" id="datapop" hidden>
+  <h2 class="sec">Sicherung</h2>
+  <p class="howto" id="dataInfo"></p>
+  <button class="btn primary" id="exportBtn">Sicherung herunterladen</button>
+  <label class="btn" id="importLbl" hidden><input type="file" accept="application/json,.json" id="importIn" hidden>Sicherung einspielen</label>
+  <p class="faint" id="importInfo" style="font-size:.8rem;margin:0" hidden>Beim Einspielen kommen alle Einträge aus der Sicherung dazu. Einträge mit gleicher Herkunft werden überschrieben, alles andere bleibt.</p>
+  <p class="faint mono" id="verInfo" style="margin:0"></p>
+</div>
+
+<aside class="dice-drawer" id="drawer" aria-label="Würfel">
+  <div class="dd-head"><h2 class="sec" style="flex:1">Würfelbecher</h2><button class="btn ghost sm" id="diceClose">Schließen</button></div>
+  <div class="dd-body">
+    <div class="advs" role="group" aria-label="Vorteil">
+      <button class="btn sm" data-adv="dis">Nachteil</button>
+      <button class="btn sm" data-adv="normal" aria-pressed="true">Normal</button>
+      <button class="btn sm" data-adv="adv">Vorteil</button>
+    </div>
+    <div class="dgrid">
+      <button class="btn die" data-die="d4">W4</button><button class="btn die" data-die="d6">W6</button><button class="btn die" data-die="d8">W8</button><button class="btn die" data-die="d10">W10</button>
+      <button class="btn die" data-die="d12">W12</button><button class="btn die primary" data-die="d20">W20</button><button class="btn die" data-die="d100">W100</button><button class="btn die" data-die="2d6">2W6</button>
+    </div>
+    <form class="row" id="exprForm" style="flex-wrap:nowrap">
+      <input id="expr" placeholder="z. B. 2d8+3 oder 4d6" aria-label="Würfelausdruck" autocomplete="off">
+      <button class="btn primary" type="submit">Werfen</button>
+    </form>
+    <label class="toggle"><span>Würfe auf der Leinwand zeigen</span><input type="checkbox" id="rollToScreen"></label>
+    <div class="row"><span class="label" style="flex:1">Verlauf</span><button class="btn ghost sm" id="clearLog">Leeren</button></div>
+    <div class="log" id="log"><div class="faint" style="font-size:.88rem">Noch keine Würfe. Klick im Charakterbogen auf einen Wert, um ihn zu würfeln.</div></div>
+  </div>
+</aside>
+
+<div id="player" hidden>
+  <div class="pv-stage" id="pvStage"></div>
+  <div class="pv-init" id="pvInit"></div>
+  <div class="pv-roll" id="pvRoll" hidden></div>
+  <div class="pv-ctl" id="pvCtl">
+    <button id="pvFs">Vollbild</button>
+    <button id="pvExit">Zur DM-Ansicht</button>
+  </div>
+</div>
+
+<div id="rolltoast" class="rolltoast" hidden></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+"use strict";
+/* ======================= Hilfen ======================= */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const mod=s=>Math.floor(((+s||0)-10)/2);
+const sg=n=>(n>=0?"+":"−")+Math.abs(n);
+const num=(v,d=0)=>{const n=parseInt(v,10);return isNaN(n)?d:n};
+function rnd(n){const a=new Uint32Array(1);crypto.getRandomValues(a);return 1+(a[0]%n)}
+function debounce(fn,ms){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}}
+function getPath(o,p){return p.split(".").reduce((a,k)=>a==null?a:a[k],o)}
+function setPath(o,p,v){const ks=p.split(".");let a=o;for(let i=0;i<ks.length-1;i++){if(a[ks[i]]==null||typeof a[ks[i]]!=="object")a[ks[i]]={};a=a[ks[i]]}a[ks[ks.length-1]]=v}
+function lsGet(k){try{return JSON.parse(localStorage.getItem(k))}catch{return null}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch{return false}}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,4500)}
+function isEditing(root){const a=document.activeElement;return a&&root.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)}
+
+/* ======================= Regeln ======================= */
+const ABILS=[["str","STÄ","Stärke"],["dex","GES","Geschicklichkeit"],["con","KON","Konstitution"],["int","INT","Intelligenz"],["wis","WEI","Weisheit"],["cha","CHA","Charisma"]];
+const ABN=Object.fromEntries(ABILS.map(a=>[a[0],a[1]]));
+const SKILLS=[["akro","Akrobatik","dex"],["arka","Arkane Kunde","int"],["athl","Athletik","str"],["auft","Auftreten","cha"],["eins","Einschüchtern","cha"],["fing","Fingerfertigkeit","dex"],["gesc","Geschichte","int"],["heil","Heilkunde","wis"],["heim","Heimlichkeit","dex"],["tier","Mit Tieren umgehen","wis"],["moti","Motiv erkennen","wis"],["nach","Nachforschungen","int"],["natu","Naturkunde","int"],["reli","Religion","int"],["taeu","Täuschen","cha"],["uebe","Überlebenskunst","wis"],["ueberz","Überzeugen","cha"],["wahr","Wahrnehmung","wis"]];
+const CONDS=["Bezaubert","Betäubt","Bewusstlos","Blind","Erschöpft","Festgesetzt","Gelähmt","Gepackt","Kampfunfähig","Liegend","Taub","Unsichtbar","Verängstigt","Vergiftet","Versteinert","Konzentration"];
+const prof=lv=>2+Math.floor((Math.max(1,num(lv,1))-1)/4);
+// Monsterwerte aus dem SRD 5.1 (CC-BY-4.0)
+const MONSTERS=[
+ ["Kobold",12,"2d6-2",2,"1/8"],["Riesenratte",12,"2d6",2,"1/8"],["Bandit",12,"2d8+2",1,"1/8"],
+ ["Goblin",15,"2d6",2,"1/4"],["Skelett",13,"2d8+4",2,"1/4"],["Zombie",8,"3d8+9",-2,"1/4"],["Wolf",13,"2d8+2",2,"1/4"],
+ ["Ork",13,"2d8+6",1,"1/2"],["Hobgoblin",18,"2d8+2",1,"1/2"],["Grottenschrat",16,"5d8+5",2,"1"],["Ghul",12,"5d8",2,"1"],
+ ["Riesenspinne",14,"4d10+4",3,"1"],["Banditenhauptmann",15,"10d8+20",3,"2"],["Oger",11,"7d10+21",-1,"2"],
+ ["Eulenbär",13,"7d10+21",1,"3"],["Troll",15,"8d10+40",1,"5"]
+];
+function newChar(npc){return{name:npc?"Neuer NSC":"Neuer Held",player:"",cls:"",race:"",level:1,background:"",align:"",isNpc:!!npc,
+ ab:{str:10,dex:10,con:10,int:10,wis:10,cha:10},saves:{},skills:{},ac:10,hp:8,hpMax:8,hpTemp:0,speed:9,initExtra:0,hitDice:"1W8",
+ ds:{s:0,f:0},insp:false,conds:[],attacks:[],castAb:"",slots:{},spells:"",features:"",inventory:"",money:{cp:0,sp:0,ep:0,gp:0,pp:0},notes:"",updated:Date.now()}}
+
+/* ======================= Würfel ======================= */
+function parseRoll(expr){
+  const t=String(expr).toLowerCase().replace(/\s+/g,"").replace(/w/g,"d");
+  if(!t||!/^[0-9d+\-]+$/.test(t))return null;
+  const parts=t.match(/[+-]?[^+-]+/g);if(!parts)return null;
+  let total=0;const det=[];
+  for(const p of parts){
+    const s=p[0]==="-"?-1:1,q=p.replace(/^[+-]/,"");
+    if(q.includes("d")){const[a,b]=q.split("d");const n=a?+a:1,sides=+b;if(!sides||!n||n>100||sides>1000||isNaN(n))return null;
+      const rs=[];for(let i=0;i<n;i++)rs.push(rnd(sides));const sum=rs.reduce((x,y)=>x+y,0);total+=s*sum;det.push((s<0?"− ":det.length?"+ ":"")+"["+rs.join(", ")+"]");}
+    else{const v=+q;if(isNaN(v))return null;total+=s*v;det.push((s<0?"− ":"+ ")+v)}
+  }
+  return{total,detail:det.join(" ")};
+}
+const Dice={adv:"normal",log:lsGet("dz-log")||[]};
+function d20(label,bonus){
+  const a=rnd(20),b=rnd(20);let pick=a,det;
+  if(Dice.adv==="adv"){pick=Math.max(a,b);det=`[${a}, ${b}] Vorteil`}
+  else if(Dice.adv==="dis"){pick=Math.min(a,b);det=`[${a}, ${b}] Nachteil`}
+  else det=`[${a}]`;
+  det+=` ${bonus>=0?"+":"−"} ${Math.abs(bonus)}`;
+  pushRoll({label,total:pick+bonus,detail:det,crit:pick===20?"20":pick===1?"1":null});
+  if(Dice.adv!=="normal")setAdv("normal");
+}
+function rollExpr(label,expr){const r=parseRoll(expr);if(!r){toast(`„${expr}“ kann ich nicht würfeln. Schreib z. B. 2d6+3.`);return}pushRoll({label,total:r.total,detail:r.detail,crit:null})}
+function pushRoll(r){
+  r.t=Date.now();Dice.log.unshift(r);Dice.log=Dice.log.slice(0,40);lsSet("dz-log",Dice.log);renderLog();
+  const el=$("#rolltoast");el.innerHTML=`<span class="t num">${r.total}</span><span><b>${esc(r.label)}</b><br><span class="d">${esc(r.detail)}</span></span>`;el.hidden=false;
+  clearTimeout(pushRoll._t);pushRoll._t=setTimeout(()=>el.hidden=true,3500);
+  if($("#rollToScreen").checked){const sc=Object.assign({},S.screen,{roll:{label:r.label,total:r.total,detail:r.detail,crit:r.crit,t:r.t}});setState("screen",sc)}
+}
+function renderLog(){
+  const l=$("#log");
+  if(!Dice.log.length){l.innerHTML=`<div class="faint" style="font-size:.88rem">Noch keine Würfe. Klick im Charakterbogen auf einen Wert, um ihn zu würfeln.</div>`;return}
+  l.innerHTML=Dice.log.map(r=>`<div class="lg ${r.crit?"c"+r.crit:""}"><span class="l">${esc(r.label)}</span><span class="t">${r.total}</span><span class="d">${esc(r.detail)}</span></div>`).join("");
+}
+function setAdv(v){Dice.adv=v;$$("[data-adv]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.adv===v)))}
+
+/* ======================= Speicher ======================= */
+const DEL={};
+const DEF_COMBAT=()=>({round:1,turnId:null,list:[]});
+const DEF_SCREEN=()=>({mode:"title",title:"Willkommen am Tisch",subtitle:"Die Geschichte beginnt",mediaId:null,noteId:null,showInit:false,showGrid:false,roll:null});
+const S={mode:"init",db:null,assets:null,chars:new Map(),notes:new Map(),media:new Map(),combat:DEF_COMBAT(),screen:DEF_SCREEN(),subs:[],pending:{}};
+function emit(what){S.subs.forEach(f=>{try{f(what)}catch(e){console.error(e)}})}
+let bc=null;try{bc=new BroadcastChannel("dungeon-zentrale")}catch{}
+const OFFLINE=!!window.LOK_OFFLINE;
+const APP_VERSION=window.LOK_VERSION||"online";
+const LDB={db:null,urls:new Map()};
+function ldbOpen(){return new Promise(res=>{try{const rq=indexedDB.open("lok-daten",1);rq.onupgradeneeded=()=>{const d=rq.result;["chars","notes","media","state","blobs"].forEach(n=>{if(!d.objectStoreNames.contains(n))d.createObjectStore(n)})};rq.onsuccess=()=>res(rq.result);rq.onerror=()=>res(null);rq.onblocked=()=>res(null)}catch{res(null)}})}
+function ldbGet(st,k){return new Promise(res=>{try{const r=LDB.db.transaction(st).objectStore(st).get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>res(undefined)}catch{res(undefined)}})}
+function ldbWrite(st,k,v){return new Promise(res=>{try{const t=LDB.db.transaction(st,"readwrite");v===DEL?t.objectStore(st).delete(k):t.objectStore(st).put(v,k);t.oncomplete=()=>res(true);t.onerror=t.onabort=()=>res(false)}catch{res(false)}})}
+function ldbEntries(st){return new Promise(res=>{const out=[];try{const c=LDB.db.transaction(st).objectStore(st).openCursor();c.onsuccess=()=>{const cur=c.result;if(cur){out.push([String(cur.key),cur.value]);cur.continue()}else res(out)};c.onerror=()=>res(out)}catch{res(out)}})}
+async function loadBlobUrls(){if(!LDB.db)return;for(const m of S.media.values())if(m.blobId&&!LDB.urls.has(m.blobId)){const b=await ldbGet("blobs",m.blobId);if(b)LDB.urls.set(m.blobId,URL.createObjectURL(b))}}
+async function localLoadAll(){
+  if(!LDB.db){S.chars=new Map();S.notes=new Map();S.media=new Map();S.combat=DEF_COMBAT();S.screen=DEF_SCREEN();return}
+  for(const col of ["chars","notes","media"])S[col]=new Map(await ldbEntries(col));
+  const st=new Map(await ldbEntries("state"));S.combat=st.get("combat")||DEF_COMBAT();S.screen=st.get("screen")||DEF_SCREEN();
+  await loadBlobUrls();
+}
+async function migrateOldLocal(){const o=lsGet("dz-data");if(!o||!LDB.db)return;if((await ldbEntries("chars")).length||(await ldbEntries("notes")).length)return;
+  for(const col of ["chars","notes","media"])for(const[k,v]of Object.entries(o[col]||{}))await ldbWrite(col,k,v);
+  if(o.combat)await ldbWrite("state","combat",o.combat);if(o.screen)await ldbWrite("state","screen",o.screen);try{localStorage.removeItem("dz-data")}catch{}}
+async function localReload(path){
+  if(path==="*"){await localLoadAll();["chars","notes","media","combat","screen"].forEach(emit);return}
+  const[col,id]=path.split("/");
+  if(col==="state"){S[id]=(await ldbGet("state",id))||(id==="combat"?DEF_COMBAT():DEF_SCREEN());emit(id);return}
+  const v=await ldbGet(col,id);if(v)S[col].set(id,v);else S[col].delete(id);if(col==="media")await loadBlobUrls();emit(col);
+}
+function localPersist(path,data){
+  if(!LDB.db)return;const[col,id]=path.split("/");
+  ldbWrite(col,id,data).then(ok=>{if(!ok)toast("Speichern ist fehlgeschlagen. Ist der Speicher des Rechners voll?");else{try{bc&&bc.postMessage({path})}catch{}}});
+}
+function dbErr(e){const c=e&&e.code;if(c==="quota_exceeded")toast("Der Speicher dieser App ist voll. Lösche alte Karten oder Notizen.");else if(c==="invalid_argument")toast("Das ließ sich nicht speichern (zu groß oder keine Schreibrechte).");else if(c==="revoked")toast("Der Zugriff auf die gespeicherten Daten wurde beendet.");else console.warn(e)}
+function dbWrite(path,data){
+  const p=S.pending[path];if(p){p.next=data;p.has=true;return}
+  S.pending[path]={has:false};
+  (async()=>{let d=data;for(;;){
+    try{if(d===DEL)await S.db.doc(path).delete();else await S.db.doc(path).set(d)}
+    catch(e){if(e&&e.code==="unavailable"){await new Promise(r=>setTimeout(r,600+Math.random()*800));try{d===DEL?await S.db.doc(path).delete():await S.db.doc(path).set(d)}catch(e2){dbErr(e2)}}else dbErr(e)}
+    const q=S.pending[path];if(q.has){d=q.next;q.has=false}else{delete S.pending[path];break}}})();
+}
+function persist(path,data){if(S.mode==="db")dbWrite(path,data);else localPersist(path,data)}
+function put(col,id,obj){S[col].set(id,obj);emit(col);persist(col+"/"+id,obj)}
+function del(col,id){S[col].delete(id);emit(col);persist(col+"/"+id,DEL)}
+function setState(name,obj){S[name]=obj;emit(name);persist("state/"+name,obj)}
+function subscribeDb(){
+  for(const col of ["chars","notes","media"]){
+    S.db.collection(col).onSnapshot(snap=>{
+      let changed=false;
+      for(const ch of snap.docChanges()){const id=ch.doc.id;if(S.pending[col+"/"+id])continue;
+        if(ch.type==="removed")S[col].delete(id);else S[col].set(id,clone(ch.doc.data()));changed=true}
+      if(changed)emit(col);
+    },e=>dbErr(e));
+  }
+  for(const name of ["combat","screen"]){
+    S.db.doc("state/"+name).onSnapshot(snap=>{if(S.pending["state/"+name])return;
+      S[name]=snap.exists?clone(snap.data()):(name==="combat"?DEF_COMBAT():DEF_SCREEN());emit(name)},e=>dbErr(e));
+  }
+}
+function mediaSrc(m){return m?(m.assetId?"/_blob/"+m.assetId:m.blobId?(LDB.urls.get(m.blobId)||""):(m.src||"")):""}
+async function boot(){
+  let db=null;
+  if(!OFFLINE){try{if(window.claude&&typeof window.claude.use==="function")db=await window.claude.use("db")}catch{db=null}}
+  const sync=$("#sync");
+  if(db){S.mode="db";S.db=db;try{S.assets=await window.claude.use("assets")}catch{S.assets=null}
+    subscribeDb();sync.className="sync ok";sync.lastElementChild.textContent="Gespeichert & live";sync.title="Alles wird automatisch gespeichert und mit der Leinwand synchronisiert.";}
+  else{S.mode="local";LDB.db=await ldbOpen();await migrateOldLocal();await localLoadAll();
+    try{navigator.storage?.persist?.()}catch{}
+    sync.className="sync local";sync.lastElementChild.textContent=OFFLINE?"Auf diesem Rechner":"Nur dieser Browser";
+    sync.title=OFFLINE?"Alles wird auf diesem Rechner gespeichert, auch ohne Internet. Lade ab und zu eine Sicherung herunter.":"Daten liegen nur in diesem Browser. Die Leinwand funktioniert in einem zweiten Fenster desselben Browsers.";
+    if(!LDB.db)toast("Der Browser erlaubt hier keinen dauerhaften Speicher. Änderungen gehen beim Schließen verloren.");
+    if(bc)bc.onmessage=e=>{const p=e.data&&e.data.path;if(p)localReload(p)};
+    ["chars","notes","media","combat","screen"].forEach(emit);}
+}
+
+/* ======================= Navigation ======================= */
+let TAB=lsGet("dz-tab")||"chars";
+function showTab(t){TAB=t;lsSet("dz-tab",t);$$(".tab").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));
+  $$(".view").forEach(v=>v.hidden=v.id!=="v-"+t);renderTab(t)}
+function renderTab(t){if(t==="lib"){libInit().then(()=>renderLib());return}({chars:renderChars,init:renderInit,notes:renderNotes,screen:renderScreen})[t]()}
+$$(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+
+/* ======================= Charaktere ======================= */
+const CH={sel:lsGet("dz-csel"),filter:"all",work:null,dirty:0};
+const saveCharSoon=debounce(()=>{if(!CH.work||!CH.sel)return;CH.work.updated=Date.now();put("chars",CH.sel,clone(CH.work));CH.dirty=0},500);
+function charSorted(){return[...S.chars.entries()].sort((a,b)=>(a[1].isNpc-b[1].isNpc)||String(a[1].name).localeCompare(b[1].name,"de"))}
+function hpClass(c){const p=c.hpMax?c.hp/c.hpMax:1;return p<=.25?"low":p<=.6?"mid":""}
+function renderChars(){
+  const v=$("#v-chars");
+  if(!S.chars.has(CH.sel)){CH.sel=charSorted()[0]?.[0]||null;CH.work=null}
+  if(!v.querySelector(".split")){v.innerHTML=`<div class="split"><div><div class="list-head"><h2 class="sec" style="flex:1">Gruppe & NSC</h2><button class="btn primary sm" id="addPc">+ Held</button><button class="btn sm" id="addNpc">+ NSC</button></div>
+    <div class="cats" style="margin-bottom:10px" id="cfilter"><button class="chip" data-f="all" aria-pressed="true">Alle</button><button class="chip" data-f="pc">Spielercharaktere</button><button class="chip" data-f="npc">NSC</button></div>
+    <div class="list" id="clist"></div></div><div class="panel" id="sheetBox"></div></div>`;
+    $("#addPc").onclick=()=>createChar(false);$("#addNpc").onclick=()=>createChar(true);
+    $("#cfilter").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;CH.filter=b.dataset.f;$$("#cfilter .chip").forEach(c=>c.setAttribute("aria-pressed",String(c===b)));renderCharList()};
+  }
+  renderCharList();
+  const box=$("#sheetBox");
+  if(!CH.sel){box.innerHTML=`<div class="empty"><h3>Noch keine Charaktere</h3><p>Lege die Helden deiner Gruppe an. Werte, Boni, Rettungswürfe und Fertigkeiten rechnet die App selbst aus, und jeder Wert ist mit einem Klick gewürfelt.</p><button class="btn primary" id="firstChar">Ersten Helden anlegen</button></div>`;CH.work=null;$("#firstChar").onclick=()=>createChar(false);return}
+  const remote=S.chars.get(CH.sel);
+  if(!CH.work||CH.work._id!==CH.sel){CH.work=Object.assign(newChar(),clone(remote),{_id:CH.sel});renderSheet()}
+  else if(!CH.dirty&&!isEditing(box)){CH.work=Object.assign(newChar(),clone(remote),{_id:CH.sel});renderSheet()}
+}
+function renderCharList(){
+  const l=$("#clist");if(!l)return;
+  const items=charSorted().filter(([,c])=>CH.filter==="all"||(CH.filter==="npc")===!!c.isNpc);
+  l.innerHTML=items.map(([id,c])=>{const p=c.hpMax?Math.max(0,Math.min(100,c.hp/c.hpMax*100)):100;
+    return`<button class="citem" data-id="${id}" aria-current="${id===CH.sel}"><span class="n">${esc(c.name||"Ohne Namen")}${c.isNpc?'<span class="tag">NSC</span>':""}</span>
+    <span class="ac">RK<b class="num">${num(c.ac)}</b></span>
+    <span class="s">${esc([c.race,c.cls].filter(Boolean).join(" · ")||"–")} · Stufe ${num(c.level,1)}${c.player?" · "+esc(c.player):""}</span>
+    <span class="hpbar" title="${num(c.hp)}/${num(c.hpMax)} TP"><i class="${hpClass(c)}" style="width:${p}%"></i></span></button>`}).join("")||`<div class="faint" style="padding:10px">Keine Einträge in diesem Filter.</div>`;
+  l.onclick=e=>{const b=e.target.closest(".citem");if(!b)return;if(CH.dirty){saveCharSoon.flush?.()}flushChar();CH.sel=b.dataset.id;lsSet("dz-csel",CH.sel);CH.work=null;renderChars()};
+}
+function flushChar(){if(CH.dirty&&CH.work&&CH.sel){CH.work.updated=Date.now();put("chars",CH.sel,clone(stripWork(CH.work)));CH.dirty=0}}
+function stripWork(w){const o=clone(w);delete o._id;return o}
+function createChar(npc){flushChar();const id=uid();put("chars",id,newChar(npc));CH.sel=id;lsSet("dz-csel",id);CH.work=null;renderChars();setTimeout(()=>{const n=$('#sheetBox [data-k="name"]');n&&(n.focus(),n.select())},30)};
+function skillVal(c,k,ab){const lvl=num(getPath(c,"skills."+k));return mod(c.ab[ab])+lvl*prof(c.level)}
+function renderSheet(){
+  const c=CH.work,box=$("#sheetBox");
+  const inp=(k,attrs="")=>`<input data-k="${k}" value="${esc(getPath(c,k)??"")}" ${attrs}>`;
+  const ninp=(k,attrs="")=>`<input type="number" data-k="${k}" data-num="1" value="${esc(getPath(c,k)??0)}" ${attrs}>`;
+  const slots=[];for(let i=1;i<=9;i++){const s=c.slots[i]||{m:0,u:0};slots.push(`<div class="slot"><span class="lv">${i}</span><input type="number" min="0" max="9" data-slot="${i}" value="${num(s.m)}" aria-label="Plätze Grad ${i}"><span class="gems">${Array.from({length:num(s.m)},(_,j)=>`<button class="gem ${j<num(s.u)?"used":""}" data-gem="${i}" data-j="${j}" aria-label="Platz ${j+1}"></button>`).join("")}</span></div>`)}
+  box.innerHTML=`<div class="sheet" id="sheet">
+   <div class="sheet-head">
+     <div class="field name">${inp("name",'aria-label="Name"')}</div>
+     <div class="field"><span class="label">Klasse</span>${inp("cls",'placeholder="Kämpfer"')}</div>
+     <div class="field"><span class="label">Volk</span>${inp("race",'placeholder="Zwerg"')}</div>
+     <div class="field"><span class="label">Stufe</span>${ninp("level",'min="1" max="20"')}</div>
+     <div class="field"><span class="label">${c.isNpc?"Rolle":"Spieler:in"}</span>${inp("player")}</div>
+   </div>
+   <div class="vitals">
+     <div class="vital"><span class="label">Rüstungsklasse</span>${ninp("ac")}</div>
+     <div class="vital"><span class="label">Initiative</span><button class="big num" data-roll="init" data-d="init"></button></div>
+     <div class="vital"><span class="label">Bewegung (m)</span>${ninp("speed")}</div>
+     <div class="vital"><span class="label">Übungsbonus</span><span class="big num" data-d="prof"></span></div>
+     <div class="vital"><span class="label">Passive Wahrn.</span><span class="big num" data-d="pp"></span></div>
+     <div class="vital"><span class="label">Inspiration</span><button class="big" data-insp aria-pressed="${!!c.insp}" style="color:${c.insp?"var(--brass)":"var(--fg-faint)"}">${c.insp?"★":"☆"}</button></div>
+   </div>
+   <div class="cols3">
+    <div class="col">
+      <div class="block"><div class="block-h"><span class="label">Attribute</span></div>
+        <div class="abils">${ABILS.map(([k,s,l])=>`<div class="abil" title="${l}"><span class="label">${s}</span><button class="modb num" data-roll="abil:${k}" data-d="mod.${k}"></button><input type="number" data-k="ab.${k}" data-num="1" value="${num(c.ab[k],10)}" aria-label="${l}"></div>`).join("")}</div></div>
+      <div class="block"><div class="block-h"><span class="label">Rettungswürfe</span></div>
+        <div class="checks">${ABILS.map(([k,s,l])=>`<div class="chk"><button class="pip" data-save="${k}" data-v="${c.saves[k]?1:0}" aria-label="Übung ${l}"></button><span class="ab">${s}</span><span>${l}</span><button class="val" data-roll="save:${k}" data-d="save.${k}"></button></div>`).join("")}</div></div>
+    </div>
+    <div class="col">
+      <div class="block"><div class="block-h"><span class="label">Fertigkeiten</span><span class="spacer"></span><span class="faint" style="font-size:.75rem">Klick ● = geübt / Expertise</span></div>
+        <div class="checks">${SKILLS.map(([k,n,ab])=>`<div class="chk"><button class="pip" data-skill="${k}" data-v="${num(c.skills[k])}" aria-label="Übung ${n}"></button><span class="ab">${ABN[ab]}</span><span>${n}</span><button class="val" data-roll="skill:${k}" data-d="skill.${k}"></button></div>`).join("")}</div></div>
+    </div>
+    <div class="col">
+      <div class="block"><div class="block-h"><span class="label">Trefferpunkte</span></div>
+        <div class="hpbox"><div class="field"><span class="label">Aktuell</span>${ninp("hp")}</div><div class="field"><span class="label">Maximum</span>${ninp("hpMax")}</div><div class="field"><span class="label">Temporär</span>${ninp("hpTemp")}</div></div>
+        <div class="hpquick"><input type="number" id="hpAmt" placeholder="Wert" aria-label="Schaden oder Heilung"><button class="btn dmg sm" data-hp="dmg">Schaden</button><button class="btn heal sm" data-hp="heal">Heilen</button><span class="spacer"></span><span class="faint" style="font-size:.8rem">TW ${esc(c.hitDice)}</span></div>
+        <div class="deaths"><span class="label" style="align-self:center">Todesrettung</span>
+          <span class="row"><span class="faint" style="font-size:.8rem">Erfolg</span>${[0,1,2].map(i=>`<button class="dbox s ${i<c.ds.s?"on":""}" data-ds="s" data-i="${i}" aria-label="Erfolg ${i+1}"></button>`).join("")}</span>
+          <span class="row"><span class="faint" style="font-size:.8rem">Fehlschlag</span>${[0,1,2].map(i=>`<button class="dbox f ${i<c.ds.f?"on":""}" data-ds="f" data-i="${i}" aria-label="Fehlschlag ${i+1}"></button>`).join("")}</span>
+          <button class="btn ghost sm" data-roll="death">Würfeln</button></div>
+      </div>
+      <div class="block"><div class="block-h"><span class="label">Angriffe</span><span class="spacer"></span><button class="btn ghost sm" data-atk-add>+ Angriff</button></div>
+        ${c.attacks.length?`<div class="atk atk-head"><span>Name</span><span>Bonus</span><span>Schaden</span><span></span></div>`:""}
+        ${c.attacks.map((a,i)=>`<div class="atk"><input data-k="attacks.${i}.n" value="${esc(a.n)}" aria-label="Angriff"><input data-k="attacks.${i}.b" value="${esc(a.b)}" aria-label="Bonus"><input data-k="attacks.${i}.d" value="${esc(a.d)}" aria-label="Schaden"><span class="row" style="flex-wrap:nowrap;gap:2px"><button class="btn sm" data-roll="atk:${i}" title="Angriff würfeln">W20</button><button class="btn sm" data-roll="dmg:${i}" title="Schaden würfeln">SCH</button><button class="btn ghost sm" data-atk-del="${i}" aria-label="Entfernen">×</button></span></div>`).join("")||`<div class="faint" style="font-size:.88rem">Noch keine Angriffe. Bonus z. B. <span class="mono">+5</span>, Schaden z. B. <span class="mono">1d8+3</span>.</div>`}
+      </div>
+      <div class="block"><div class="block-h"><span class="label">Zustände</span></div>
+        <div class="row" style="gap:4px">${CONDS.map(n=>`<button class="chip ${c.conds.includes(n)?"on":""}" data-cond="${esc(n)}">${n}</button>`).join("")}</div></div>
+    </div>
+   </div>
+   <div class="cols3">
+    <div class="col">
+      <div class="block"><div class="block-h"><span class="label">Zauberwirken</span><span class="spacer"></span>
+        <select data-k="castAb" style="width:auto"><option value="">kein Attribut</option>${ABILS.map(([k,s,l])=>`<option value="${k}" ${c.castAb===k?"selected":""}>${l}</option>`).join("")}</select></div>
+        <div class="row" data-d="spellinfo" style="font-size:.9rem"></div>
+        <div class="slots">${slots.join("")}</div>
+        <div class="row"><button class="btn ghost sm" data-rest>Lange Rast</button><span class="faint" style="font-size:.8rem">setzt Plätze, TP und Todesrettung zurück</span></div>
+      </div>
+    </div>
+    <div class="col"><div class="block"><div class="block-h"><span class="label">Zauber</span></div><textarea data-k="spells" placeholder="Zaubertricks: Feuerpfeil, Licht …&#10;Grad 1: Magisches Geschoss, Schild …">${esc(c.spells)}</textarea></div>
+      <div class="block"><div class="block-h"><span class="label">Merkmale & Talente</span></div><textarea data-k="features">${esc(c.features)}</textarea></div></div>
+    <div class="col"><div class="block"><div class="block-h"><span class="label">Ausrüstung</span></div><textarea data-k="inventory">${esc(c.inventory)}</textarea>
+      <div class="money">${[["cp","KM"],["sp","SM"],["ep","EM"],["gp","GM"],["pp","PM"]].map(([k,l])=>`<div class="field"><span class="label">${l}</span>${ninp("money."+k)}</div>`).join("")}</div></div>
+      <div class="block"><div class="block-h"><span class="label">DM-Notizen</span></div><textarea data-k="notes" placeholder="Hintergrund, Geheimnisse, Ziele …">${esc(c.notes)}</textarea></div></div>
+   </div>
+   <div class="row" style="border-top:1px solid var(--line);padding-top:12px">
+     <div class="field" style="width:150px"><span class="label">Hintergrund</span>${inp("background")}</div>
+     <div class="field" style="width:150px"><span class="label">Gesinnung</span>${inp("align")}</div>
+     <div class="field" style="width:110px"><span class="label">Trefferwürfel</span>${inp("hitDice")}</div>
+     <div class="field" style="width:110px"><span class="label">Init.-Zusatz</span>${ninp("initExtra")}</div>
+     <span class="spacer"></span>
+     <button class="btn sm" data-toinit>In den Kampf</button>
+     <button class="btn danger sm" data-delchar>Löschen</button>
+   </div></div>`;
+  refreshDerived();
+}
+function refreshDerived(){
+  const c=CH.work,box=$("#sheet");if(!box)return;const pb=prof(c.level);
+  const set=(k,t)=>{const e=box.querySelector(`[data-d="${k}"]`);if(e)e.textContent=t};
+  set("prof",sg(pb));set("init",sg(mod(c.ab.dex)+num(c.initExtra)));
+  set("pp",10+skillVal(c,"wahr","wis"));
+  ABILS.forEach(([k])=>{set("mod."+k,sg(mod(c.ab[k])));set("save."+k,sg(mod(c.ab[k])+(c.saves[k]?pb:0)))});
+  SKILLS.forEach(([k,,ab])=>set("skill."+k,sg(skillVal(c,k,ab))));
+  const si=box.querySelector('[data-d="spellinfo"]');
+  if(si)si.innerHTML=c.castAb?`<span>Zauber-SG <b class="num">${8+pb+mod(c.ab[c.castAb])}</b></span><span>·</span><span>Zauberangriff <button class="btn sm" data-roll="spellatk">${sg(pb+mod(c.ab[c.castAb]))}</button></span>`:`<span class="faint">Wähle das Zauberattribut, um SG und Angriff zu berechnen.</span>`;
+}
+function charChanged(full){CH.dirty=1;saveCharSoon();if(full)renderSheet();else refreshDerived()}
+document.addEventListener("input",e=>{
+  const sh=e.target.closest("#sheet");if(!sh)return;const t=e.target;
+  if(t.dataset.k){let v=t.value;if(t.dataset.num)v=num(v,0);setPath(CH.work,t.dataset.k,v);charChanged(false);
+    if(/^(name|cls|race|level|ac|hp|hpMax|hpTemp|player)$/.test(t.dataset.k)){S.chars.set(CH.sel,stripWork(CH.work));renderCharList();syncSoon()}}
+  else if(t.dataset.slot){const i=t.dataset.slot;const m=Math.max(0,Math.min(9,num(t.value)));CH.work.slots[i]={m,u:Math.min(num(CH.work.slots[i]?.u),m)};
+    const g=t.parentElement.querySelector(".gems");g.innerHTML=Array.from({length:m},(_,j)=>`<button class="gem ${j<CH.work.slots[i].u?"used":""}" data-gem="${i}" data-j="${j}"></button>`).join("");charChanged(false)}
+});
+document.addEventListener("change",e=>{const t=e.target;if(t.closest("#sheet")&&t.tagName==="SELECT"&&t.dataset.k){setPath(CH.work,t.dataset.k,t.value);charChanged(false)}});
+document.addEventListener("click",e=>{
+  const sh=e.target.closest("#sheet");if(!sh)return;const b=e.target.closest("button");if(!b)return;const c=CH.work;const name=c.name||"Charakter";
+  if(b.dataset.roll){const r=b.dataset.roll,pb=prof(c.level);
+    if(r==="init")d20(`${name}: Initiative`,mod(c.ab.dex)+num(c.initExtra));
+    else if(r==="death")d20(`${name}: Todesrettung`,0);
+    else if(r==="spellatk")d20(`${name}: Zauberangriff`,pb+mod(c.ab[c.castAb]));
+    else{const[kind,k]=r.split(":");
+      if(kind==="abil")d20(`${name}: ${ABILS.find(a=>a[0]===k)[2]}`,mod(c.ab[k]));
+      if(kind==="save")d20(`${name}: Rettungswurf ${ABN[k]}`,mod(c.ab[k])+(c.saves[k]?pb:0));
+      if(kind==="skill"){const s=SKILLS.find(x=>x[0]===k);d20(`${name}: ${s[1]}`,skillVal(c,k,s[2]))}
+      if(kind==="atk"){const a=c.attacks[k];d20(`${name}: ${a.n||"Angriff"}`,num(String(a.b).replace("−","-").replace("+",""),0))}
+      if(kind==="dmg"){const a=c.attacks[k];rollExpr(`${name}: ${a.n||"Angriff"} Schaden`,a.d||"1d6")}}
+    return}
+  if(b.dataset.save){c.saves[b.dataset.save]=!c.saves[b.dataset.save];b.dataset.v=c.saves[b.dataset.save]?1:0;charChanged(false);return}
+  if(b.dataset.skill){const k=b.dataset.skill;c.skills[k]=(num(c.skills[k])+1)%3;b.dataset.v=c.skills[k];charChanged(false);return}
+  if(b.hasAttribute("data-insp")){c.insp=!c.insp;charChanged(true);return}
+  if(b.dataset.ds){const k=b.dataset.ds,i=+b.dataset.i;c.ds[k]=c.ds[k]===i+1?i:i+1;charChanged(true);return}
+  if(b.dataset.gem){const i=b.dataset.gem,j=+b.dataset.j;const s=c.slots[i];s.u=s.u===j+1?j:j+1;charChanged(true);return}
+  if(b.dataset.cond){const n=b.dataset.cond;c.conds=c.conds.includes(n)?c.conds.filter(x=>x!==n):[...c.conds,n];charChanged(true);return}
+  if(b.dataset.hp){const v=num($("#hpAmt").value,0);if(!v)return;applyDamage(c,b.dataset.hp==="dmg"?v:-v);charChanged(true);S.chars.set(CH.sel,stripWork(c));renderCharList();syncCombatFromChar(CH.sel,c);return}
+  if(b.hasAttribute("data-atk-add")){c.attacks.push({n:"",b:"+0",d:"1d6"});charChanged(true);return}
+  if(b.dataset.atkDel!=null){c.attacks.splice(+b.dataset.atkDel,1);charChanged(true);return}
+  if(b.hasAttribute("data-rest")){Object.values(c.slots).forEach(s=>s.u=0);c.hp=c.hpMax;c.hpTemp=0;c.ds={s:0,f:0};charChanged(true);S.chars.set(CH.sel,stripWork(c));renderCharList();syncCombatFromChar(CH.sel,c);return}
+  if(b.hasAttribute("data-toinit")){addCharToCombat(CH.sel);showTab("init");return}
+  if(b.hasAttribute("data-delchar")){if(!b.classList.contains("armed")){b.classList.add("armed");b.textContent="Wirklich löschen?";setTimeout(()=>{b.classList.remove("armed");b.textContent="Löschen"},3000);return}
+    CH.dirty=0;del("chars",CH.sel);CH.sel=null;CH.work=null;renderChars();return}
+});
+function applyDamage(o,amt){ // amt>0 Schaden, <0 Heilung; o hat hp,hpMax,hpTemp
+  if(amt>0){let t=num(o.hpTemp);const fromT=Math.min(t,amt);o.hpTemp=t-fromT;o.hp=Math.max(0,num(o.hp)-(amt-fromT))}
+  else o.hp=Math.min(num(o.hpMax),num(o.hp)-amt);
+}
+const syncSoon=debounce(()=>{if(CH.sel&&CH.work)syncCombatFromChar(CH.sel,CH.work)},700);
+function syncCombatFromChar(id,c){const cb=clone(S.combat);let ch=false;cb.list.forEach(x=>{if(x.charId===id){x.hp=num(c.hp);x.hpMax=num(c.hpMax);x.hpTemp=num(c.hpTemp);x.ac=num(c.ac);x.name=c.name;ch=true}});if(ch)setState("combat",cb)}
+S.subs.push(w=>{if(w==="chars"&&TAB==="chars")renderChars()});
+
+/* ======================= Initiative ======================= */
+const IN={open:null,addTab:"monster"};
+function sortedCombat(){return[...S.combat.list].sort((a,b)=>{const ai=a.init==null||a.init===""?-999:+a.init,bi=b.init==null||b.init===""?-999:+b.init;return bi-ai||num(b.initMod)-num(a.initMod)||String(a.name).localeCompare(b.name,"de")})}
+function nameTaken(base){const re=new RegExp("^"+base.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+" (\\d+)$");let mx=0;S.combat.list.forEach(c=>{const m=c.name.match(re);if(m)mx=Math.max(mx,+m[1]);else if(c.name===base)mx=Math.max(mx,1)});return mx}
+function addMonster(name,ac,hpExpr,initMod,count,rollHp){
+  const cb=clone(S.combat);let start=nameTaken(name);
+  for(let i=0;i<count;i++){const r=parseRoll(hpExpr);let hp=r?r.total:num(hpExpr,1);if(!rollHp){hp=avgDice(hpExpr)}
+    const nm=(count>1||start>0)?`${name} ${start+i+1}`:name;
+    cb.list.push({id:uid(),name:nm,kind:"monster",init:rnd(20)+num(initMod),initMod:num(initMod),hp:Math.max(1,hp),hpMax:Math.max(1,hp),hpTemp:0,ac:num(ac),conds:[],hidden:false})}
+  setState("combat",cb);
+}
+function avgDice(e){const t=String(e).toLowerCase().replace(/\s/g,"").replace(/w/g,"d");const parts=t.match(/[+-]?[^+-]+/g)||[];let s=0;for(const p of parts){const g=p[0]==="-"?-1:1,q=p.replace(/^[+-]/,"");if(q.includes("d")){const[a,b]=q.split("d");s+=g*Math.floor((a?+a:1)*((+b+1)/2))}else s+=g*(+q||0)}return s}
+function addCharToCombat(id){const c=S.chars.get(id);if(!c)return;const cb=clone(S.combat);if(cb.list.some(x=>x.charId===id))return;
+  cb.list.push({id:uid(),charId:id,name:c.name,kind:c.isNpc?"npc":"pc",init:null,initMod:mod(c.ab?.dex)+num(c.initExtra),hp:num(c.hp),hpMax:num(c.hpMax),hpTemp:num(c.hpTemp),ac:num(c.ac),conds:[],hidden:false});setState("combat",cb)}
+function updC(id,fn){const cb=clone(S.combat);const x=cb.list.find(c=>c.id===id);if(!x)return;fn(x,cb);setState("combat",cb);
+  if(x.charId&&S.chars.has(x.charId)){const ch=clone(S.chars.get(x.charId));if(ch.hp!==x.hp||ch.hpTemp!==x.hpTemp){ch.hp=x.hp;ch.hpTemp=x.hpTemp;put("chars",x.charId,ch);if(CH.sel===x.charId)CH.work=null}}}
+function healthWord(c){if(c.hp<=0)return"am Boden";const p=c.hp/c.hpMax;return p>=1?"unverletzt":p>.5?"leicht verletzt":p>.25?"schwer verletzt":"dem Tode nah"}
+let initPendingRender=false;
+function renderInit(){
+  const v=$("#v-init");
+  if(isEditing(v)&&v.querySelector(".combatants")){initPendingRender=true;return}
+  initPendingRender=false;
+  const cb=S.combat,list=sortedCombat();
+  const pcs=charSorted().filter(([,c])=>!c.isNpc);
+  v.innerHTML=`<div class="init-wrap"><div>
+    <div class="row"><div class="round"><span class="label">Runde</span><span class="rn num">${cb.round}</span></div><span class="spacer"></span>
+      <button class="btn sm" data-ia="prev">← Zurück</button><button class="btn primary" data-ia="next">Nächster Zug →</button></div>
+    <div class="row" style="margin-top:10px"><button class="btn ghost sm" data-ia="sort">Neu sortieren</button><button class="btn ghost sm" data-ia="rollmon">Monster-Initiative würfeln</button>
+      <button class="btn ghost sm" data-ia="screen" aria-pressed="${!!S.screen.showInit}">Auf Leinwand zeigen</button><span class="spacer"></span><button class="btn danger sm" data-ia="clear">Kampf beenden</button></div>
+    <div class="combatants">${list.length?list.map(c=>cbtRow(c,cb)).join(""):`<div class="panel empty"><h3>Kein Kampf im Gange</h3><p>Füge rechts die Gruppe und Monster hinzu. Trag die Initiative der Spieler ein, die App sortiert und führt durch die Runden.</p></div>`}</div>
+  </div>
+  <div class="panel addbox">
+    <h2 class="sec">Teilnehmer hinzufügen</h2>
+    <button class="btn" data-ia="party" ${pcs.length?"":"disabled"}>Ganze Gruppe (${pcs.length})</button>
+    <div class="row" style="gap:4px">${charSorted().map(([id,c])=>`<button class="chip" data-addchar="${id}" ${cb.list.some(x=>x.charId===id)?'disabled style="opacity:.4"':""}>+ ${esc(c.name)}</button>`).join("")}</div>
+    <div class="block-h"><span class="label">Monster (SRD)</span></div>
+    <div class="row"><span class="label">Anzahl</span><input type="number" id="mCount" value="1" min="1" max="20" style="width:64px"><label class="row faint" style="gap:4px;font-size:.85rem"><input type="checkbox" id="mRoll" checked style="width:auto">TP würfeln</label></div>
+    <div class="mlist">${MONSTERS.map((m,i)=>`<div class="mrow"><span>${m[0]} <span class="st">HG ${m[4]}</span></span><span class="st num">RK ${m[1]} · ${m[2]}</span><button class="btn sm" data-mon="${i}">+</button></div>`).join("")}</div>
+    <div class="block-h"><span class="label">Eigener Gegner</span></div>
+    <form id="customMon" class="block">
+      <input id="cmName" placeholder="Name, z. B. Kultführer" required>
+      <div class="row" style="flex-wrap:nowrap"><div class="field"><span class="label">RK</span><input id="cmAc" type="number" value="12"></div><div class="field"><span class="label">TP / Würfel</span><input id="cmHp" value="4d8+4"></div><div class="field"><span class="label">Init-Mod</span><input id="cmInit" type="number" value="1"></div></div>
+      <button class="btn primary" type="submit">Hinzufügen</button>
+    </form>
+    <p class="attrib">Monsterwerte aus dem System Reference Document 5.1, CC-BY-4.0, Wizards of the Coast.</p>
+  </div></div>`;
+  $("#customMon").onsubmit=e=>{e.preventDefault();const n=$("#cmName").value.trim();if(!n)return;addMonster(n,$("#cmAc").value,$("#cmHp").value,$("#cmInit").value,Math.max(1,num($("#mCount").value,1)),$("#mRoll").checked)};
+}
+function cbtRow(c,cb){
+  const turn=cb.turnId===c.id,down=c.hp<=0,pct=c.hpMax?Math.max(0,Math.min(100,c.hp/c.hpMax*100)):0;
+  const kl={pc:"SC",npc:"NSC",monster:"Monster"}[c.kind];
+  return`<div class="cbt ${turn?"turn":""} ${down?"down":""}" data-cid="${c.id}">
+   <div class="ini"><input type="number" data-cf="init" value="${c.init??""}" placeholder="–" aria-label="Initiative ${esc(c.name)}"></div>
+   <div class="who"><div class="n"><span>${esc(c.name)}</span><span class="kind ${c.kind}">${kl}</span>${c.hidden?'<span class="kind npc">versteckt</span>':""}</div>
+     <div class="conds">${c.conds.map(n=>`<span class="chip on static">${esc(n)}</span>`).join("")}</div></div>
+   <div class="acv">RK<input type="number" data-cf="ac" value="${num(c.ac)}" aria-label="Rüstungsklasse"></div>
+   <div class="hpctl"><div class="nums num">${num(c.hp)}<small>/ ${num(c.hpMax)} TP${num(c.hpTemp)?` · +${num(c.hpTemp)} temp`:""}</small></div>
+     <div class="hpbar" style="margin:0"><i class="${hpClass(c)}" style="width:${pct}%"></i></div>
+     <div class="act"><input type="number" data-amt placeholder="Wert" aria-label="Wert"><button class="btn dmg sm" data-cact="dmg">Schaden</button><button class="btn heal sm" data-cact="heal">Heilen</button></div></div>
+   <div class="tools"><button class="btn ghost sm" data-cact="conds" aria-expanded="${IN.open===c.id}" title="Zustände">Zust.</button><button class="btn ghost sm" data-cact="hide" title="Vor der Leinwand verbergen">${c.hidden?"Zeigen":"Verb."}</button><button class="btn ghost sm" data-cact="rm" aria-label="Entfernen">×</button></div>
+   ${IN.open===c.id?`<div class="cond-pop">${CONDS.map(n=>`<button class="chip ${c.conds.includes(n)?"on":""}" data-ccond="${esc(n)}">${n}</button>`).join("")}</div>`:""}
+  </div>`;
+}
+$("#v-init").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.ia){const a=b.dataset.ia,cb=clone(S.combat),list=sortedCombat();
+    if(a==="next"||a==="prev"){if(!list.length)return;let i=list.findIndex(c=>c.id===cb.turnId);
+      if(a==="next"){if(i<0)i=-1;i++;if(i>=list.length){i=0;cb.round++}} else {if(i<=0){if(cb.round>1){cb.round--;i=list.length-1}else i=0}else i--}
+      cb.turnId=list[i].id;setState("combat",cb)}
+    if(a==="sort")renderInit();
+    if(a==="rollmon"){cb.list.forEach(c=>{if(c.kind==="monster")c.init=rnd(20)+num(c.initMod)});setState("combat",cb)}
+    if(a==="clear"){if(!b.classList.contains("armed")){b.classList.add("armed");b.textContent="Wirklich beenden?";setTimeout(()=>{b.classList.remove("armed");b.textContent="Kampf beenden"},3000);return}
+      setState("combat",{round:1,turnId:null,list:cb.list.filter(c=>c.kind==="pc").map(c=>Object.assign(c,{init:null,conds:[]}))})}
+    if(a==="party"){charSorted().filter(([,c])=>!c.isNpc).forEach(([id])=>addCharToCombat(id))}
+    if(a==="screen"){setState("screen",Object.assign({},S.screen,{showInit:!S.screen.showInit}))}
+    return}
+  if(b.dataset.addchar){addCharToCombat(b.dataset.addchar);return}
+  if(b.dataset.mon!=null){const m=MONSTERS[+b.dataset.mon];addMonster(m[0],m[1],m[2],m[3],Math.max(1,num($("#mCount").value,1)),$("#mRoll").checked);return}
+  const row=b.closest(".cbt");if(!row)return;const id=row.dataset.cid;
+  if(b.dataset.cact==="dmg"||b.dataset.cact==="heal"){const v=num(row.querySelector("[data-amt]").value,0);if(!v)return;updC(id,x=>applyDamage(x,b.dataset.cact==="dmg"?v:-v));return}
+  if(b.dataset.cact==="conds"){IN.open=IN.open===id?null:id;renderInit();return}
+  if(b.dataset.cact==="hide"){updC(id,x=>x.hidden=!x.hidden);return}
+  if(b.dataset.cact==="rm"){const cb=clone(S.combat);cb.list=cb.list.filter(c=>c.id!==id);if(cb.turnId===id)cb.turnId=null;setState("combat",cb);return}
+  if(b.dataset.ccond){const n=b.dataset.ccond;updC(id,x=>x.conds=x.conds.includes(n)?x.conds.filter(y=>y!==n):[...x.conds,n]);return}
+});
+$("#v-init").addEventListener("change",e=>{const t=e.target,row=t.closest(".cbt");if(!row||!t.dataset.cf)return;
+  const v=t.value===""?null:num(t.value);const cb=clone(S.combat);const x=cb.list.find(c=>c.id===row.dataset.cid);if(!x)return;x[t.dataset.cf]=v;setState("combat",cb)});
+$("#v-init").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("[data-amt]")){e.preventDefault();e.target.parentElement.querySelector('[data-cact="dmg"]').click()}});
+$("#v-init").addEventListener("focusout",()=>setTimeout(()=>{if(initPendingRender&&!isEditing($("#v-init")))renderInit()},0));
+S.subs.push(w=>{if((w==="combat"||w==="chars"||w==="screen")&&TAB==="init")renderInit()});
+
+/* ======================= Notizen ======================= */
+const NCATS=["Sitzung","NSC","Ort","Quest","Gegenstand","Lore","Sonstiges"];
+const NT={sel:lsGet("dz-nsel"),cat:"Alle",q:"",work:null,dirty:0};
+const saveNoteSoon=debounce(()=>flushNote(),600);
+function flushNote(){if(NT.dirty&&NT.work&&NT.sel){NT.work.updated=Date.now();const o=clone(NT.work);delete o._id;put("notes",NT.sel,o);NT.dirty=0}}
+function notesSorted(){return[...S.notes.entries()].sort((a,b)=>(!!b[1].pinned-!!a[1].pinned)||(num(b[1].updated)-num(a[1].updated)))}
+function renderNotes(){
+  const v=$("#v-notes");
+  if(!v.querySelector(".notes-wrap")){v.innerHTML=`<div class="notes-wrap"><div><div class="list-head"><h2 class="sec" style="flex:1">Notizen</h2><button class="btn primary sm" id="addNote">+ Notiz</button></div>
+    <input id="nq" placeholder="Durchsuchen …" aria-label="Notizen durchsuchen" style="margin-bottom:8px">
+    <div class="cats" id="ncats" style="margin-bottom:10px">${["Alle",...NCATS].map(c=>`<button class="chip" data-c="${c}" aria-pressed="${c===NT.cat}">${c}</button>`).join("")}</div>
+    <div class="list" id="nlist"></div></div><div class="panel" id="nedit"></div></div>`;
+    $("#addNote").onclick=()=>{flushNote();const id=uid();put("notes",id,{title:"",cat:NT.cat==="Alle"?"Sitzung":NT.cat,body:"",pinned:false,updated:Date.now()});NT.sel=id;lsSet("dz-nsel",id);NT.work=null;renderNotes();setTimeout(()=>$("#ntitle")?.focus(),30)};
+    $("#nq").oninput=e=>{NT.q=e.target.value.toLowerCase();renderNoteList()};
+    $("#ncats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;NT.cat=b.dataset.c;$$("#ncats .chip").forEach(c=>c.setAttribute("aria-pressed",String(c===b)));renderNoteList()};
+  }
+  if(!S.notes.has(NT.sel)){NT.sel=notesSorted()[0]?.[0]||null;NT.work=null}
+  renderNoteList();
+  const box=$("#nedit");
+  if(!NT.sel){box.innerHTML=`<div class="empty"><h3>Dein Kampagnenbuch ist leer</h3><p>Halte Sitzungen, NSC, Orte und offene Quests fest. Notizen lassen sich als Handout auf der Leinwand zeigen.</p><button class="btn primary" id="firstNote">Erste Notiz anlegen</button></div>`;$("#firstNote").onclick=()=>$("#addNote").click();return}
+  const remote=S.notes.get(NT.sel);
+  if(NT.work&&NT.work._id===NT.sel&&(NT.dirty||isEditing(box)))return;
+  NT.work=Object.assign({title:"",cat:"Sitzung",body:"",pinned:false},clone(remote),{_id:NT.sel});
+  const n=NT.work;
+  box.innerHTML=`<div class="editor"><div class="row"><select id="ncat" style="width:auto">${NCATS.map(c=>`<option ${c===n.cat?"selected":""}>${c}</option>`).join("")}</select>
+    <button class="btn sm" id="npin" aria-pressed="${!!n.pinned}">${n.pinned?"Angeheftet":"Anheften"}</button><span class="spacer"></span>
+    <button class="btn sm" id="nshow">Als Handout zeigen</button><button class="btn danger sm" id="ndel">Löschen</button></div>
+    <input class="title" id="ntitle" value="${esc(n.title)}" placeholder="Titel">
+    <textarea id="nbody" placeholder="Was ist passiert? Wer wurde getroffen? Welche Fäden sind offen?">${esc(n.body)}</textarea>
+    <span class="faint" style="font-size:.8rem">Zuletzt geändert ${new Date(num(n.updated,Date.now())).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"})}</span></div>`;
+  const ch=()=>{NT.dirty=1;saveNoteSoon();S.notes.set(NT.sel,Object.assign({},NT.work));renderNoteList()};
+  $("#ntitle").oninput=e=>{n.title=e.target.value;ch()};$("#nbody").oninput=e=>{n.body=e.target.value;ch()};
+  $("#ncat").onchange=e=>{n.cat=e.target.value;ch()};
+  $("#npin").onclick=()=>{n.pinned=!n.pinned;NT.dirty=1;flushNote();NT.work=null;renderNotes()};
+  $("#nshow").onclick=()=>{flushNote();setState("screen",Object.assign({},S.screen,{mode:"handout",noteId:NT.sel}));toast("Die Notiz läuft jetzt auf der Leinwand.");$("#toast").style.background="var(--moss)";setTimeout(()=>$("#toast").style.background="",4600)};
+  $("#ndel").onclick=e=>{const b=e.currentTarget;if(!b.classList.contains("armed")){b.classList.add("armed");b.textContent="Wirklich löschen?";setTimeout(()=>{b.classList.remove("armed");b.textContent="Löschen"},3000);return}NT.dirty=0;del("notes",NT.sel);NT.sel=null;NT.work=null;renderNotes()};
+}
+function renderNoteList(){
+  const l=$("#nlist");if(!l)return;
+  const it=notesSorted().filter(([,n])=>(NT.cat==="Alle"||n.cat===NT.cat)&&(!NT.q||(n.title+" "+n.body).toLowerCase().includes(NT.q)));
+  l.innerHTML=it.map(([id,n])=>`<button class="nitem" data-id="${id}" aria-current="${id===NT.sel}"><span class="cat">${n.pinned?"★ ":""}${esc(n.cat)}</span><span class="n">${esc(n.title||"Ohne Titel")}</span><span class="p">${esc((n.body||"").split("\n")[0].slice(0,90))||"–"}</span></button>`).join("")||`<div class="faint" style="padding:10px">Nichts gefunden.</div>`;
+  l.onclick=e=>{const b=e.target.closest(".nitem");if(!b)return;flushNote();NT.sel=b.dataset.id;lsSet("dz-nsel",NT.sel);NT.work=null;renderNotes()};
+}
+S.subs.push(w=>{if(w==="notes"&&TAB==="notes")renderNotes()});
+
+/* ======================= Leinwand-Steuerung ======================= */
+const SC={sel:lsGet("dz-msel"),tool:"reveal",brush:1,tokSel:null,color:"#c0392b",fog:null,fogFor:null};
+const TCOLORS=["#c0392b","#2e86de","#27ae60","#8e44ad","#e67e22","#16a085","#7f8c8d","#d4ac0d"];
+function fogArr(m){const n=m.cols*m.rows;let s=m.fog||"";if(s.length!==n)s="0".repeat(n);return Uint8Array.from(s,c=>c==="1"?1:0)}
+function fogStr(a){let s="";for(let i=0;i<a.length;i++)s+=a[i]?"1":"0";return s}
+function screenLabel(){const s=S.screen;if(s.mode==="blank")return"Schwarzer Bildschirm";if(s.mode==="title")return"Bahnhofstafel: "+(s.title||"");
+  if(s.mode==="handout"){const n=S.notes.get(s.noteId);return"Handout: "+(n?.title||"Notiz")}
+  const m=S.media.get(s.mediaId);return(s.mode==="map"?"Karte: ":"Bild: ")+(m?.name||"nicht gefunden")}
+function renderScreen(){
+  const v=$("#v-screen");if(isEditing(v)&&v.querySelector(".screen-wrap")){refreshNow();return}
+  const s=S.screen,media=[...S.media.entries()].sort((a,b)=>num(b[1].created)-num(a[1].created));
+  if(SC.sel&&!S.media.has(SC.sel))SC.sel=null;
+  const m=SC.sel?S.media.get(SC.sel):null;
+  v.innerHTML=`<div class="screen-wrap"><div class="col">
+   <div class="panel now"><span class="live"><i></i>Live</span><span class="what" id="nowWhat">${esc(screenLabel())}</span><span class="spacer"></span>
+     <button class="btn sm" data-sm="blank">Abdunkeln</button><button class="btn sm" data-sm="title">Bahnhofstafel zeigen</button><button class="btn primary sm" data-sm="preview">Leinwand hier öffnen</button></div>
+   ${m?mapEditorHtml(m):""}
+   <div class="panel" style="padding:14px;display:flex;flex-direction:column;gap:12px">
+     <div class="row"><h2 class="sec" style="flex:1">Karten & Bilder</h2><span class="faint" style="font-size:.82rem">${S.mode==="db"?(S.assets?"Bilder werden mit der App gespeichert":"Bilder werden verkleinert gespeichert"):LDB.db?"Bilder werden auf diesem Rechner gespeichert":"Bilder werden verkleinert im Browser gespeichert"}</span></div>
+     <label class="dropzone" id="drop"><input type="file" accept="image/*" multiple id="upl" hidden><b>Bilder hochladen</b><span style="font-size:.88rem">Battlemaps, Szenenbilder, Porträts – hierher ziehen oder klicken</span></label>
+     <div class="lib">${media.map(([id,x])=>`<div class="media" aria-current="${id===SC.sel}"><div class="thumb" data-msel="${id}" style="background-image:url('${esc(mediaSrc(x))}')"><span class="badge">${x.kind==="map"?"Karte":"Bild"}</span>${(s.mode==="map"||s.mode==="image")&&s.mediaId===id?'<span class="badge onair">Live</span>':""}</div>
+       <div class="meta"><input value="${esc(x.name)}" data-mname="${id}" aria-label="Name"><div class="row" style="gap:4px"><button class="btn primary sm" data-mshow="${id}">Zeigen</button><button class="btn sm" data-mkind="${id}" title="Als Karte mit Raster & Nebel oder als einfaches Bild">${x.kind==="map"?"→ Bild":"→ Karte"}</button><button class="btn ghost sm danger" data-mdel="${id}" aria-label="Löschen">×</button></div></div></div>`).join("")||`<div class="faint" style="grid-column:1/-1;font-size:.9rem">Noch keine Bilder. Lade eine Battlemap hoch, um Nebel des Krieges und Spielfiguren zu nutzen.</div>`}</div>
+   </div></div>
+   <div class="side">
+     <div class="panel"><h2 class="sec">Großer Bildschirm</h2>
+       ${OFFLINE?`<p class="howto">Öffne die Spieler-Ansicht in einem eigenen Fenster, zieh es auf den großen Bildschirm und klick dort auf „Vollbild“. Alles, was du hier steuerst, erscheint dort sofort.</p><button class="btn primary" id="openPvWin">Leinwand-Fenster öffnen</button>`
+       :`<p class="howto">Öffne den Link zu dieser App auf dem Rechner am großen Bildschirm und hänge <code>#leinwand</code> an das Ende des Links. Dann siehst du dort nur die Spieler-Ansicht. Alles, was du hier steuerst, erscheint dort sofort.</p>
+       <p class="howto">Läuft der Bildschirm am eigenen Laptop als zweiter Monitor: Öffne den Link in einem zweiten Fenster, zieh es auf den großen Bildschirm und klick dort auf „Vollbild“.</p>`}</div>
+     <div class="panel"><h2 class="sec">Bahnhofstafel</h2>
+       <div class="field"><span class="label">Nächster Halt</span><input id="tTitle" value="${esc(s.title)}"></div>
+       <div class="field"><span class="label">Untertitel</span><input id="tSub" value="${esc(s.subtitle)}"></div>
+       <button class="btn" id="tShow">Tafel aktualisieren & zeigen</button></div>
+     <div class="panel"><h2 class="sec">Einblendungen</h2>
+       <label class="toggle"><span>Initiative-Reihenfolge</span><input type="checkbox" id="oInit" ${s.showInit?"checked":""}></label>
+       <label class="toggle"><span>Raster auf Karten</span><input type="checkbox" id="oGrid" ${s.showGrid?"checked":""}></label>
+       <label class="toggle"><span>Würfe anzeigen</span><input type="checkbox" id="oRoll" ${$("#rollToScreen").checked?"checked":""}></label>
+     </div>
+   </div></div>`;
+  if(m)initMapEditor(m);
+}
+function refreshNow(){const w=$("#nowWhat");if(w)w.textContent=screenLabel()}
+function mapEditorHtml(m){
+  if(m.kind!=="map")return`<div class="panel mapedit"><div class="row"><h2 class="sec" style="flex:1">${esc(m.name)}</h2><button class="btn primary sm" data-mshow="${SC.sel}">Auf Leinwand zeigen</button></div>
+    <div class="mapview"><img src="${esc(mediaSrc(m))}" alt="${esc(m.name)}" style="max-width:100%;max-height:60vh;display:block"></div>
+    <p class="faint" style="font-size:.85rem;margin:0">Einfaches Bild ohne Raster. Mach es zur Karte, um Nebel des Krieges und Figuren zu nutzen.</p></div>`;
+  const chars=charSorted();
+  return`<div class="panel mapedit"><div class="row"><h2 class="sec" style="flex:1">${esc(m.name)}</h2><button class="btn primary sm" data-mshow="${SC.sel}">Auf Leinwand zeigen</button></div>
+   <div class="toolbar">
+     <button class="btn sm" data-tool="reveal" aria-pressed="${SC.tool==="reveal"}">Aufdecken</button>
+     <button class="btn sm" data-tool="hide" aria-pressed="${SC.tool==="hide"}">Verdecken</button>
+     <button class="btn sm" data-tool="move" aria-pressed="${SC.tool==="move"}">Figuren bewegen</button>
+     <span class="sep"></span><span class="label">Pinsel</span>
+     ${[1,2,4].map(b=>`<button class="btn sm" data-brush="${b}" aria-pressed="${SC.brush===b}">${b}×${b}</button>`).join("")}
+     <span class="sep"></span><button class="btn ghost sm" data-fog="all1">Alles aufdecken</button><button class="btn ghost sm" data-fog="all0">Alles verdecken</button>
+   </div>
+   <div class="mapview" id="mapview"><div class="mapbox" id="mapbox"><img id="mapimg" src="${esc(mediaSrc(m))}" alt=""><div class="ovl" id="ovl"><canvas id="fogc" class="fog-dm"></canvas><div class="grid" id="gridl"></div><div id="toks"></div></div></div></div>
+   <div class="toolbar">
+     <span class="label">Rastergröße</span><input type="range" id="cellR" min="12" max="300" value="${m.cell}" style="width:160px"><span class="num faint" id="cellV">${m.cols}×${m.rows} Felder</span>
+     <span class="faint" style="font-size:.78rem">Ändern setzt den Nebel zurück.</span>
+   </div>
+   <div class="toolbar">
+     <span class="label">Figur</span>
+     <select id="tokName" style="width:auto;max-width:180px"><option value="">Eigener Name …</option>${chars.map(([id,c])=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("")}<option value="__mon">Gegner (nummeriert)</option></select>
+     <input id="tokCustom" placeholder="Beschriftung" style="width:120px">
+     <span class="swatches">${TCOLORS.map(c=>`<button class="sw" data-col="${c}" style="background:${c}" aria-pressed="${SC.color===c}" aria-label="Farbe"></button>`).join("")}</span>
+     <button class="btn sm" id="tokAdd">+ Figur</button>
+     ${SC.tokSel?`<span class="sep"></span><button class="btn sm" id="tokHide">Ein-/ausblenden</button><button class="btn sm danger" id="tokDel">Figur entfernen</button>`:""}
+   </div></div>`;
+}
+let mapRO=null;
+function initMapEditor(m){
+  const img=$("#mapimg"),box=$("#mapbox"),view=$("#mapview");if(!img)return;
+  SC.fog=fogArr(m);SC.fogFor=SC.sel;
+  const layout=()=>{const W=view.clientWidth,H=Math.min(window.innerHeight*0.66,900);const sc=Math.min(W/m.w,H/m.h);box.style.width=Math.floor(m.w*sc)+"px";box.style.height=Math.floor(m.h*sc)+"px";
+    const o=$("#ovl");o.style.width=(m.cols*m.cell/m.w*100)+"%";o.style.height=(m.rows*m.cell/m.h*100)+"%"};
+  layout();if(mapRO)mapRO.disconnect();mapRO=new ResizeObserver(layout);mapRO.observe(view);
+  drawGrid($("#gridl"),m,"rgba(255,255,255,.22)");drawFog($("#fogc"),m,SC.fog,"#000");drawTokens($("#toks"),m,true);
+  const ovl=$("#ovl");let painting=false,drag=null;
+  const cellAt=e=>{const r=ovl.getBoundingClientRect();return[(e.clientX-r.left)/r.width*m.cols,(e.clientY-r.top)/r.height*m.rows]};
+  const paint=e=>{const[x,y]=cellAt(e);const cx=Math.floor(x),cy=Math.floor(y),b=SC.brush,h=Math.floor((b-1)/2);
+    for(let j=cy-h;j<cy-h+b;j++)for(let i=cx-h;i<cx-h+b;i++){if(i<0||j<0||i>=m.cols||j>=m.rows)continue;SC.fog[j*m.cols+i]=SC.tool==="reveal"?1:0}
+    drawFog($("#fogc"),m,SC.fog,"#000")};
+  ovl.onpointerdown=e=>{
+    const tk=e.target.closest(".token");
+    if(tk){SC.tokSel=tk.dataset.tid;$$(".token",ovl).forEach(t=>t.classList.toggle("sel",t===tk));drag={id:tk.dataset.tid,el:tk};ovl.setPointerCapture(e.pointerId);e.preventDefault();
+      if(!$("#tokDel")){const tb=$$(".mapedit .toolbar").pop();tb.insertAdjacentHTML("beforeend",`<span class="sep"></span><button class="btn sm" id="tokHide">Ein-/ausblenden</button><button class="btn sm danger" id="tokDel">Figur entfernen</button>`);wireTokBtns()}return}
+    if(SC.tool==="move")return;painting=true;ovl.setPointerCapture(e.pointerId);paint(e);e.preventDefault()};
+  ovl.onpointermove=e=>{if(painting)paint(e);else if(drag){const[x,y]=cellAt(e);drag.el.style.left=(x/m.cols*100)+"%";drag.el.style.top=(y/m.rows*100)+"%";drag.x=x;drag.y=y}};
+  ovl.onpointerup=ovl.onpointercancel=()=>{
+    if(painting){painting=false;const mm=clone(S.media.get(SC.sel));mm.fog=fogStr(SC.fog);put("media",SC.sel,mm)}
+    if(drag){if(drag.x!=null){const mm=clone(S.media.get(SC.sel));const t=mm.tokens.find(t=>t.id===drag.id);if(t){t.x=Math.max(0,Math.min(m.cols-1,Math.floor(drag.x)))+.5;t.y=Math.max(0,Math.min(m.rows-1,Math.floor(drag.y)))+.5}put("media",SC.sel,mm)}drag=null}};
+  $("#cellR").oninput=e=>{const c=num(e.target.value,40);$("#cellV").textContent=`${Math.ceil(m.w/c)}×${Math.ceil(m.h/c)} Felder`};
+  $("#cellR").onchange=e=>{const c=num(e.target.value,40);const mm=clone(S.media.get(SC.sel));mm.cell=c;mm.cols=Math.ceil(mm.w/c);mm.rows=Math.ceil(mm.h/c);mm.fog="0".repeat(mm.cols*mm.rows);
+    const sx=m.cols/mm.cols;mm.tokens.forEach(t=>{t.x=Math.min(mm.cols-.5,Math.floor(t.x/sx)+.5);t.y=Math.min(mm.rows-.5,Math.floor(t.y/sx)+.5)});put("media",SC.sel,mm)};
+  $("#tokAdd").onclick=()=>{const mm=clone(S.media.get(SC.sel));let label=$("#tokName").value;
+    if(label==="__mon"){const n=mm.tokens.filter(t=>t.mon).length+1;label=String(n);mm.tokens.push({id:uid(),label,color:SC.color,x:.5,y:.5,mon:true,hidden:false})}
+    else{label=label||$("#tokCustom").value.trim()||"?";mm.tokens.push({id:uid(),label,color:SC.color,x:.5,y:.5,hidden:false})}
+    const c=mm.cols*mm.rows;const fa=fogArr(mm);let pos=0;for(let i=0;i<c;i++)if(fa[i]&&!mm.tokens.some(t=>Math.floor(t.x)===i%mm.cols&&Math.floor(t.y)===Math.floor(i/mm.cols))){pos=i;break}
+    const t=mm.tokens[mm.tokens.length-1];t.x=pos%mm.cols+.5;t.y=Math.floor(pos/mm.cols)+.5;SC.tokSel=t.id;put("media",SC.sel,mm)};
+  wireTokBtns();
+}
+function wireTokBtns(){
+  const d=$("#tokDel"),h=$("#tokHide");
+  if(d)d.onclick=()=>{const mm=clone(S.media.get(SC.sel));mm.tokens=mm.tokens.filter(t=>t.id!==SC.tokSel);SC.tokSel=null;put("media",SC.sel,mm)};
+  if(h)h.onclick=()=>{const mm=clone(S.media.get(SC.sel));const t=mm.tokens.find(t=>t.id===SC.tokSel);if(t)t.hidden=!t.hidden;put("media",SC.sel,mm)};
+}
+function tokLabel(l){l=String(l||"?");return l.length<=3?l:l.split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase()}
+function drawTokens(el,m,dm){const fa=dm?null:fogArr(m);el.innerHTML=(m.tokens||[]).filter(t=>dm||(!t.hidden&&fa[Math.floor(t.y)*m.cols+Math.floor(t.x)])).map(t=>`<div class="token ${dm&&t.id===SC.tokSel?"sel":""} ${t.hidden?"hid":""}" data-tid="${t.id}" title="${esc(t.label)}" style="left:${t.x/m.cols*100}%;top:${t.y/m.rows*100}%;width:${80/m.cols}%;aspect-ratio:1;background:${esc(t.color)}">${esc(tokLabel(t.label))}</div>`).join("")}
+function drawFog(cv,m,arr,color){cv.width=m.cols;cv.height=m.rows;const x=cv.getContext("2d");x.clearRect(0,0,m.cols,m.rows);x.fillStyle=color;
+  for(let j=0;j<m.rows;j++)for(let i=0;i<m.cols;i++)if(!arr[j*m.cols+i])x.fillRect(i,j,1,1)}
+function drawGrid(el,m,col){el.style.backgroundImage=`linear-gradient(to right,${col} 1px,transparent 1px),linear-gradient(to bottom,${col} 1px,transparent 1px)`;el.style.backgroundSize=`${100/m.cols}% ${100/m.rows}%`}
+$("#v-screen").addEventListener("click",e=>{
+  const b=e.target.closest("button,[data-msel]");if(!b)return;
+  if(b.dataset.sm){if(b.dataset.sm==="preview"){openPlayer(true);return}setState("screen",Object.assign({},S.screen,{mode:b.dataset.sm}));return}
+  if(b.dataset.msel){SC.sel=b.dataset.msel;lsSet("dz-msel",SC.sel);SC.tokSel=null;renderScreen();$("#v-screen .mapedit")?.scrollIntoView({behavior:"smooth",block:"start"});return}
+  if(b.dataset.mshow){const x=S.media.get(b.dataset.mshow);setState("screen",Object.assign({},S.screen,{mode:x.kind==="map"?"map":"image",mediaId:b.dataset.mshow}));return}
+  if(b.dataset.mkind){const mm=clone(S.media.get(b.dataset.mkind));mm.kind=mm.kind==="map"?"image":"map";put("media",b.dataset.mkind,mm);if(S.screen.mediaId===b.dataset.mkind&&(S.screen.mode==="map"||S.screen.mode==="image"))setState("screen",Object.assign({},S.screen,{mode:mm.kind==="map"?"map":"image"}));return}
+  if(b.dataset.mdel){if(!b.classList.contains("armed")){b.classList.add("armed");b.textContent="Löschen?";setTimeout(()=>{b.classList.remove("armed");b.textContent="×"},3000);return}
+    const id=b.dataset.mdel,x=S.media.get(id);del("media",id);if(x?.assetId&&S.assets){S.assets.delete(x.assetId).catch(()=>{})}if(x?.blobId&&LDB.db)ldbWrite("blobs",x.blobId,DEL);if(S.screen.mediaId===id)setState("screen",Object.assign({},S.screen,{mode:"blank",mediaId:null}));return}
+  if(b.dataset.tool){SC.tool=b.dataset.tool;$$("[data-tool]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));return}
+  if(b.dataset.brush){SC.brush=+b.dataset.brush;$$("[data-brush]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));return}
+  if(b.dataset.fog){const mm=clone(S.media.get(SC.sel));mm.fog=(b.dataset.fog==="all1"?"1":"0").repeat(mm.cols*mm.rows);put("media",SC.sel,mm);return}
+  if(b.dataset.col){SC.color=b.dataset.col;$$("[data-col]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));return}
+  if(b.id==="openPvWin"){const w=window.open(location.href.split("#")[0]+"#leinwand","lok-leinwand","popup,width=1280,height=720");if(!w)toast("Das Fenster wurde blockiert. Erlaube Pop-ups für diese App.");return}
+  if(b.id==="tShow"){setState("screen",Object.assign({},S.screen,{mode:"title",title:$("#tTitle").value,subtitle:$("#tSub").value}));return}
+});
+$("#v-screen").addEventListener("change",e=>{const t=e.target;
+  if(t.id==="upl"){handleFiles(t.files);t.value=""}
+  if(t.id==="oInit")setState("screen",Object.assign({},S.screen,{showInit:t.checked}));
+  if(t.id==="oGrid")setState("screen",Object.assign({},S.screen,{showGrid:t.checked}));
+  if(t.id==="oRoll"){$("#rollToScreen").checked=t.checked;lsSet("dz-r2s",t.checked)}
+  if(t.dataset.mname){const mm=clone(S.media.get(t.dataset.mname));mm.name=t.value;put("media",t.dataset.mname,mm)}
+});
+$("#v-screen").addEventListener("dragover",e=>{const d=e.target.closest("#drop");if(d){e.preventDefault();d.classList.add("over")}});
+$("#v-screen").addEventListener("dragleave",e=>{const d=e.target.closest("#drop");if(d)d.classList.remove("over")});
+$("#v-screen").addEventListener("drop",e=>{const d=e.target.closest("#drop");if(d){e.preventDefault();d.classList.remove("over");handleFiles(e.dataTransfer.files)}});
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src})}
+async function shrink(img,maxBytes){let maxD=1800,q=.82;for(let k=0;k<8;k++){const sc=Math.min(1,maxD/Math.max(img.naturalWidth,img.naturalHeight));const c=document.createElement("canvas");c.width=Math.round(img.naturalWidth*sc);c.height=Math.round(img.naturalHeight*sc);c.getContext("2d").drawImage(img,0,0,c.width,c.height);const d=c.toDataURL("image/jpeg",q);if(d.length<=maxBytes)return d;maxD*=.8;q=Math.max(.5,q-.06)}return null}
+async function handleFiles(files){
+  for(const f of files){if(!f.type.startsWith("image/"))continue;
+    const url=URL.createObjectURL(f);let img;try{img=await loadImg(url)}catch{toast(`„${f.name}“ ist kein lesbares Bild.`);continue}
+    const w=img.naturalWidth,h=img.naturalHeight,isMap=true;
+    const cell=Math.max(12,Math.round(Math.max(w,h)/30)),cols=Math.ceil(w/cell),rows=Math.ceil(h/cell);
+    const doc={name:f.name.replace(/\.[^.]+$/,""),kind:isMap?"map":"image",w,h,cell,cols,rows,fog:"0".repeat(cols*rows),tokens:[],created:Date.now()};
+    $("#drop b").textContent="Lade hoch …";
+    try{
+      if(S.assets&&f.size<=20*1024*1024){const r=await S.assets.upload(f);doc.assetId=r.id}
+      else if(S.mode==="local"&&LDB.db){const bid=uid();if(!(await ldbWrite("blobs",bid,f)))throw new Error("blob");LDB.urls.set(bid,URL.createObjectURL(f));doc.blobId=bid}
+      else{const d=await shrink(img,S.mode==="db"?220000:700000);if(!d){toast(`„${f.name}“ ist zu groß.`);continue}doc.src=d}
+      const id=uid();put("media",id,doc);SC.sel=id;lsSet("dz-msel",id);
+    }catch(e){toast(`„${f.name}“ konnte nicht gespeichert werden.`);console.warn(e)}
+    finally{URL.revokeObjectURL(url)}
+  }
+  renderScreen();
+}
+S.subs.push(w=>{if((w==="media"||w==="screen"||w==="notes"||w==="chars")&&TAB==="screen"){
+  // Kartenänderungen ohne Neuaufbau, wenn möglich
+  if(w==="media"&&SC.sel&&$("#mapbox")){const m=S.media.get(SC.sel);if(m&&m.kind==="map"&&$("#ovl")&&String(m.cell)===$("#cellR").value&&$("#mapimg").getAttribute("src")===mediaSrc(m)){SC.fog=fogArr(m);drawFog($("#fogc"),m,SC.fog,"#000");drawTokens($("#toks"),m,true);
+      const tb=$$(".mapedit .toolbar").pop();if(tb){const x=$("#tokDel");if(!SC.tokSel&&x){x.previousElementSibling?.remove();x.previousElementSibling?.remove();x.remove()}}return}}
+  if(w==="screen"&&$("#v-screen .screen-wrap")){refreshNow();$$("#v-screen .thumb .onair").forEach(x=>x.remove());const s=S.screen;if((s.mode==="map"||s.mode==="image")&&s.mediaId){const t=$(`#v-screen [data-msel="${s.mediaId}"]`);t&&t.insertAdjacentHTML("beforeend",'<span class="badge onair">Live</span>')}
+    const oi=$("#oInit");if(oi)oi.checked=!!s.showInit;const og=$("#oGrid");if(og)og.checked=!!s.showGrid;return}
+  renderScreen()}});
+
+/* ======================= Spieler-Leinwand ======================= */
+const PV={on:false,fromDm:false,imgSrc:null,ro:null,hideT:null};
+function openPlayer(fromDm){PV.on=true;PV.fromDm=fromDm;$("#player").hidden=false;$("#pvExit").hidden=!fromDm;document.documentElement.style.overflow="hidden";renderPlayer(true);wake();bumpCtl()}
+function closePlayer(){PV.on=false;$("#player").hidden=true;document.documentElement.style.overflow="";try{document.fullscreenElement&&document.exitFullscreen()}catch{}}
+$("#pvExit").onclick=closePlayer;
+$("#pvFs").onclick=()=>{const el=document.documentElement;try{document.fullscreenElement?document.exitFullscreen():el.requestFullscreen?.().catch(()=>toast("Vollbild ist hier nicht möglich. Nutze die Vollbild-Taste deines Browsers (F11)."))}catch{}};
+async function wake(){try{await navigator.wakeLock?.request("screen")}catch{}}
+document.addEventListener("visibilitychange",()=>{if(PV.on&&document.visibilityState==="visible")wake()});
+function bumpCtl(){const c=$("#pvCtl");c.classList.remove("fade");$("#player").classList.remove("hidecursor");clearTimeout(PV.hideT);PV.hideT=setTimeout(()=>{c.classList.add("fade");$("#player").classList.add("hidecursor")},2500)}
+$("#player").addEventListener("pointermove",bumpCtl);
+let lastRollT=0;
+function renderPlayer(force){
+  if(!PV.on)return;const s=S.screen,st=$("#pvStage");
+  const nt=S.notes.get(s.noteId),mi=S.media.get(s.mediaId);
+  const key=[s.mode,s.mediaId,s.noteId,s.title,s.subtitle,mi?mediaSrc(mi).length+mi.kind:"-",s.mode==="handout"&&nt?nt.updated:""].join("|");
+  if(force||st.dataset.key!==key){st.dataset.key=key;PV.imgSrc=null;
+    if(s.mode==="blank")st.innerHTML="";
+    else if(s.mode==="title")st.innerHTML=`<div class="pv-vignette"></div><div class="pv-title"><span class="pv-kicker">Die Lok · Nächster Halt</span><h1>${esc(s.title)}</h1><div class="pv-rail" aria-hidden="true"><i style="left:12%"></i><i style="left:34%"></i><i class="cur" style="left:56%"></i><i style="left:78%;opacity:.45"></i></div>${s.subtitle?`<p>${esc(s.subtitle)}</p>`:""}</div>`;
+    else if(s.mode==="handout"){const n=S.notes.get(s.noteId);st.innerHTML=n?`<div class="pv-handout"><h2>${esc(n.title||"Handout")}</h2><div>${esc(n.body)}</div></div>`:""}
+    else if(s.mode==="image"){const m=S.media.get(s.mediaId);st.innerHTML=m?`<img class="pv-img" src="${esc(mediaSrc(m))}" alt=""><div class="pv-caption">${esc(m.name)}</div>`:""}
+    else if(s.mode==="map"){const m=S.media.get(s.mediaId);if(m){st.innerHTML=`<div class="mapbox" id="pvBox"><img src="${esc(mediaSrc(m))}" alt=""><div class="ovl" id="pvOvl"><canvas id="pvFog" class="fog-pv"></canvas><div class="grid" id="pvGrid"></div><div id="pvToks"></div></div></div>`;
+      if(PV.ro)PV.ro.disconnect();PV.ro=new ResizeObserver(()=>layoutPv());PV.ro.observe(st)}else st.innerHTML=""}
+  }
+  if(s.mode==="map"){const m=S.media.get(s.mediaId);if(m&&$("#pvBox")){layoutPv();drawFog($("#pvFog"),m,fogArr(m),"#050507");
+    const g=$("#pvGrid");if(s.showGrid)drawGrid(g,m,"rgba(255,255,255,.14)");else g.style.backgroundImage="none";drawTokens($("#pvToks"),m,false)}}
+  // Initiative
+  const ini=$("#pvInit");
+  if(s.showInit&&S.combat.list.length&&s.mode!=="title"){const list=sortedCombat().filter(c=>!c.hidden);
+    ini.innerHTML=`<div class="rh">Runde ${S.combat.round}</div>`+list.map(c=>`<div class="it ${c.id===S.combat.turnId?"cur":""} ${c.hp<=0?"dn":""}"><span class="nm">${esc(c.name)}</span><span class="st">${c.kind==="pc"?`${num(c.hp)}/${num(c.hpMax)} TP`:healthWord(c)}</span></div>`).join("")}
+  else ini.innerHTML="";
+  // Würfe
+  const r=s.roll,pr=$("#pvRoll");
+  if(r&&r.t!==lastRollT&&Date.now()-r.t<15000){lastRollT=r.t;pr.className="pv-roll "+(r.crit?"c"+r.crit:"");pr.innerHTML=`<span class="tt num">${r.total}</span><span><span class="lb">${esc(r.label)}</span><br><span class="dt">${esc(r.detail)}</span></span>`;pr.hidden=false;pr.style.opacity=1;
+    clearTimeout(renderPlayer._t);renderPlayer._t=setTimeout(()=>{pr.style.opacity=0;setTimeout(()=>pr.hidden=true,400)},6000)}
+}
+function layoutPv(){const s=S.screen,m=S.media.get(s.mediaId),b=$("#pvBox");if(!m||!b)return;const W=window.innerWidth,H=window.innerHeight,sc=Math.min(W/m.w,H/m.h);
+  b.style.width=Math.floor(m.w*sc)+"px";b.style.height=Math.floor(m.h*sc)+"px";const o=$("#pvOvl");o.style.width=(m.cols*m.cell/m.w*100)+"%";o.style.height=(m.rows*m.cell/m.h*100)+"%"}
+S.subs.push(w=>{if(!PV.on)return;if(w==="screen"||w==="combat"||w==="combat-quiet")renderPlayer(false);if(w==="media"||w==="notes")renderPlayer(false)});
+
+/* ======================= Bibliothek (nur lokal im Browser) ======================= */
+const LB={books:new Map(),texts:new Map(),docs:new Map(),q:"",results:[],cur:null,zoom:1,indexing:new Set(),idb:null,ready:false};
+function idbOpen(){return new Promise(res=>{try{const rq=indexedDB.open("dz-bibliothek",1);rq.onupgradeneeded=()=>{const d=rq.result;d.createObjectStore("books",{keyPath:"id"});d.createObjectStore("texts",{keyPath:"id"})};rq.onsuccess=()=>res(rq.result);rq.onerror=()=>res(null)}catch{res(null)}})}
+function idbAll(store){return new Promise(res=>{try{const t=LB.idb.transaction(store).objectStore(store).getAll();t.onsuccess=()=>res(t.result||[]);t.onerror=()=>res([])}catch{res([])}})}
+function idbPut(store,v){return new Promise(res=>{try{const t=LB.idb.transaction(store,"readwrite");t.objectStore(store).put(v);t.oncomplete=()=>res(true);t.onerror=()=>res(false)}catch{res(false)}})}
+function idbDel(store,k){return new Promise(res=>{try{const t=LB.idb.transaction(store,"readwrite");t.objectStore(store).delete(k);t.oncomplete=()=>res(true);t.onerror=()=>res(false)}catch{res(false)}})}
+let pdfLoad=null;
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+function pdfjs(){if(!pdfLoad)pdfLoad=(async()=>{
+  if(OFFLINE){await loadScript("pdf.js");window.pdfjsLib.GlobalWorkerOptions.workerSrc="pdf.worker.js";return window.pdfjsLib}
+  await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js");return window.pdfjsLib})();return pdfLoad}
+async function libInit(){
+  if(LB.ready)return;LB.ready=true;LB.idb=await idbOpen();
+  if(LB.idb){for(const b of await idbAll("books"))LB.books.set(b.id,b);for(const t of await idbAll("texts"))LB.texts.set(t.id,t.pages)}
+  try{navigator.storage?.persist?.()}catch{}
+  renderLib();for(const b of LB.books.values())if((LB.texts.get(b.id)||[]).length<b.pages)indexBook(b.id);
+}
+async function getDoc(id){if(LB.docs.has(id))return LB.docs.get(id);const b=LB.books.get(id);if(!b)return null;const lib=await pdfjs();
+  const p=lib.getDocument({data:new Uint8Array(await b.blob.arrayBuffer()),disableFontFace:true,isEvalSupported:false}).promise;LB.docs.set(id,p);return p}
+async function addBooks(files){
+  for(const f of files){if(!/pdf$/i.test(f.type)&&!/\.pdf$/i.test(f.name))continue;
+    const id=uid();const b={id,name:f.name.replace(/\.pdf$/i,"").replace(/[_]+/g," ").trim(),size:f.size,pages:0,blob:f,added:Date.now()};
+    LB.books.set(id,b);LB.texts.set(id,[]);renderLib();
+    try{const doc=await getDoc(id);b.pages=doc.numPages}catch(e){console.warn(e);LB.books.delete(id);toast(`„${f.name}“ ließ sich nicht öffnen.`);renderLib();continue}
+    if(LB.idb&&!(await idbPut("books",b)))toast("Der Browser hat nicht genug Speicher, um das Buch dauerhaft zu behalten. Es bleibt bis zum Neuladen verfügbar.");
+    renderLib();indexBook(id);
+  }
+}
+async function indexBook(id){
+  if(LB.indexing.has(id))return;LB.indexing.add(id);
+  try{const doc=await getDoc(id),b=LB.books.get(id);if(!b.pages){b.pages=doc.numPages}
+    const pages=LB.texts.get(id)||[];LB.texts.set(id,pages);
+    for(let i=pages.length+1;i<=doc.numPages;i++){
+      if(!LB.books.has(id))return;
+      const pg=await doc.getPage(i);const tc=await pg.getTextContent();let s="";
+      for(const it of tc.items){s+=it.str;s+=it.hasEOL?"\n":(it.str&&!it.str.endsWith(" ")?" ":"")}
+      pages.push(s.replace(/-\n(\p{Ll})/gu,"$1").replace(/[ \t]+/g," ").replace(/\n{2,}/g,"\n"));pg.cleanup();
+      if(i%20===0||i===doc.numPages){if(LB.idb)await idbPut("texts",{id,pages});updateBookRow(id);if(LB.q)runSearch()}
+      if(i%4===0)await new Promise(r=>setTimeout(r,0));
+    }
+  }catch(e){console.warn(e);toast("Beim Durchsuchbar-Machen ist ein Fehler aufgetreten.")}
+  finally{LB.indexing.delete(id);updateBookRow(id)}
+}
+function normalize(s){return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
+function runSearch(){
+  const q=LB.q.trim();LB.results=[];
+  if(q.length<2){renderResults();return}
+  const phrase=/^".+"$/.test(q);const terms=phrase?[normalize(q.slice(1,-1))]:normalize(q).split(/\s+/).filter(Boolean);
+  for(const[id,pages]of LB.texts){const b=LB.books.get(id);if(!b)continue;
+    pages.forEach((txt,i)=>{const n=normalize(txt);let score=0;for(const t of terms){let c=0,p=n.indexOf(t);while(p>=0&&c<50){c++;p=n.indexOf(t,p+t.length)}if(!c)return;score+=c}
+      const head=n.slice(0,160);terms.forEach(t=>{if(head.includes(t))score+=6});
+      LB.results.push({id,page:i+1,score,txt,n})})}
+  for(const[id,nt]of S.notes){const n=normalize((nt.title||"")+"\n"+(nt.body||""));if(terms.every(t=>n.includes(t)))LB.results.push({note:id,score:1000,txt:(nt.title||"")+" – "+(nt.body||""),n})}
+  LB.results.sort((a,b)=>b.score-a.score);LB.terms=terms;renderResults();
+}
+function snippet(r){const terms=LB.terms||[];let at=-1;for(const t of terms){const p=r.n.indexOf(t);if(p>=0&&(at<0||p<at))at=p}
+  const a=Math.max(0,at-90),e=Math.min(r.txt.length,at+220);let s=(a>0?"… ":"")+r.txt.slice(a,e).replace(/\s+/g," ")+(e<r.txt.length?" …":"");
+  let h=esc(s);for(const t of terms){if(!t)continue;const re=new RegExp("("+t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","gi");h=h.replace(re,"<mark>$1</mark>")}return h}
+function renderLib(){
+  const v=$("#v-lib");if(!v)return;
+  if(!v.querySelector(".lib-wrap")){v.innerHTML=`<div class="lib-wrap"><div class="col">
+    <div class="searchbar"><input id="libq" placeholder="Regeln suchen, z. B. Grappled, Opportunity Attack oder &quot;Long Rest&quot;" aria-label="In Büchern und Notizen suchen" autocomplete="off"></div>
+    <div class="row"><span class="groupcount" id="rescount"></span></div>
+    <div class="results" id="results"></div></div>
+    <div class="col"><div class="panel reader" id="reader"></div>
+    <div class="panel" style="padding:14px;display:flex;flex-direction:column;gap:10px"><div class="row"><h2 class="sec" style="flex:1">Deine Bücher</h2></div>
+      <div class="books" id="books"></div>
+      <label class="dropzone" id="pdfdrop"><input type="file" accept="application/pdf,.pdf" multiple id="pdfin" hidden><b>PDFs hinzufügen</b><span style="font-size:.88rem">Regelbücher, Abenteuer, Handouts – hierher ziehen oder klicken</span></label>
+      <p class="howto" style="margin:0">Die PDFs bleiben nur auf deinem Rechner. Sie werden nicht hochgeladen, nicht mit der Leinwand geteilt und sind nicht Teil der Sicherung. Beim ersten Hinzufügen liest die App jede Seite einmal ein, das dauert bei einem dicken Regelbuch ein paar Minuten.</p></div></div></div>`;
+    $("#libq").oninput=debounce(e=>{LB.q=e.target.value;runSearch()},180);
+    $("#pdfin").onchange=e=>{addBooks([...e.target.files]);e.target.value=""};
+    const dz=$("#pdfdrop");dz.ondragover=e=>{e.preventDefault();dz.classList.add("over")};dz.ondragleave=()=>dz.classList.remove("over");dz.ondrop=e=>{e.preventDefault();dz.classList.remove("over");addBooks([...e.dataTransfer.files])};
+    $("#results").onclick=e=>{const b=e.target.closest(".res");if(!b)return;if(b.dataset.note){NT.sel=b.dataset.note;NT.work=null;showTab("notes");return}openPage(b.dataset.id,+b.dataset.page);$$("#results .res").forEach(x=>x.setAttribute("aria-current",String(x===b)))};
+    $("#books").onclick=async e=>{const b=e.target.closest("button");if(!b)return;
+      if(b.dataset.bopen){openPage(b.dataset.bopen,1);return}
+      if(b.dataset.bdel){if(!b.classList.contains("armed")){b.classList.add("armed");b.textContent="Entfernen?";setTimeout(()=>{b.classList.remove("armed");b.textContent="×"},3000);return}
+        const id=b.dataset.bdel;LB.books.delete(id);LB.texts.delete(id);LB.docs.delete(id);if(LB.idb){await idbDel("books",id);await idbDel("texts",id)}if(LB.cur?.id===id)LB.cur=null;renderLib();runSearch()}};
+  }
+  const bl=$("#books");
+  bl.innerHTML=[...LB.books.values()].map(b=>`<div class="book" id="bk-${b.id}">${bookRowInner(b)}</div>`).join("")||`<div class="faint" style="font-size:.9rem">Noch keine Bücher. Füge dein Spielerhandbuch und den Spielleiterleitfaden als PDF hinzu.</div>`;
+  renderReader();renderResults();
+}
+function bookRowInner(b){const n=(LB.texts.get(b.id)||[]).length,pct=b.pages?Math.round(n/b.pages*100):0;
+  return`<span class="n">${esc(b.name)}</span><span class="row" style="gap:2px;grid-row:1/3;grid-column:2"><button class="btn sm" data-bopen="${b.id}">Öffnen</button><button class="btn ghost sm danger" data-bdel="${b.id}" aria-label="Entfernen">×</button></span>
+  <span class="s">${b.pages?`${b.pages} Seiten · `:""}${(b.size/1048576).toFixed(0)} MB · ${pct>=100?"durchsuchbar":LB.indexing.has(b.id)?`wird eingelesen … ${pct} %`:pct?`${pct} % eingelesen`:"wartet"}</span>
+  ${pct<100?`<span class="prog"><i style="width:${pct}%"></i></span>`:""}`}
+function updateBookRow(id){const el=$("#bk-"+id),b=LB.books.get(id);if(el&&b)el.innerHTML=bookRowInner(b)}
+function renderResults(){
+  const l=$("#results"),c=$("#rescount");if(!l)return;
+  if(!LB.books.size&&!LB.q){l.innerHTML=`<div class="panel empty"><h3>Deine Regelbibliothek</h3><p>Füge rechts deine PDFs hinzu. Danach findest du hier jede Regel, jeden Zauber und jedes Monster per Stichwort, mit Seitenzahl und Vorschau. Deine Notizen werden gleich mit durchsucht.</p></div>`;c.textContent="";return}
+  if(LB.q.trim().length<2){l.innerHTML=`<div class="faint" style="padding:6px 2px">Gib mindestens zwei Buchstaben ein. Mehrere Wörter müssen alle auf der Seite vorkommen, Anführungszeichen suchen die genaue Wortfolge.</div>`;c.textContent="";return}
+  const R=LB.results.slice(0,150);
+  c.textContent=LB.results.length?`${LB.results.length} Treffer${LB.results.length>150?", die besten 150 angezeigt":""}`:"";
+  l.innerHTML=R.map(r=>r.note?`<button class="res" data-note="${r.note}"><span class="h"><b>Notiz</b></span><span class="x">${snippet(r)}</span></button>`
+    :`<button class="res" data-id="${r.id}" data-page="${r.page}" aria-current="${LB.cur&&LB.cur.id===r.id&&LB.cur.page===r.page}"><span class="h"><b>${esc(LB.books.get(r.id)?.name||"")}</b><span>Seite ${r.page}</span></span><span class="x">${snippet(r)}</span></button>`).join("")
+    ||`<div class="faint" style="padding:6px 2px">Nichts gefunden. Die Bücher sind auf Englisch, versuch es mit englischen Begriffen.</div>`;
+}
+function openPage(id,page){const b=LB.books.get(id);if(!b)return;LB.cur={id,page:Math.max(1,Math.min(b.pages||1,page))};renderReader()}
+let readerTask=0;
+async function renderReader(){
+  const box=$("#reader");if(!box)return;
+  if(!LB.cur){box.innerHTML=`<div class="empty" style="padding:24px"><h3>Seitenansicht</h3><p>Klick auf einen Treffer, um die Seite hier zu lesen.</p></div>`;return}
+  const b=LB.books.get(LB.cur.id);
+  box.innerHTML=`<div class="row"><b style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.name)}</b>
+    <button class="btn sm" data-pg="-1" aria-label="Vorherige Seite">←</button><input class="pg" type="number" id="pgin" value="${LB.cur.page}" min="1" max="${b.pages}" aria-label="Seite"><span class="faint num">/ ${b.pages}</span><button class="btn sm" data-pg="1" aria-label="Nächste Seite">→</button>
+    <button class="btn ghost sm" data-z="-1" aria-label="Verkleinern">−</button><button class="btn ghost sm" data-z="1" aria-label="Vergrößern">+</button></div>
+    <div class="pagewrap" id="pagewrap"><div class="faint" style="padding:30px">Seite wird geladen …</div></div>`;
+  box.querySelectorAll("[data-pg]").forEach(x=>x.onclick=()=>openPage(LB.cur.id,LB.cur.page+ +x.dataset.pg));
+  box.querySelectorAll("[data-z]").forEach(x=>x.onclick=()=>{LB.zoom=Math.max(.6,Math.min(3,LB.zoom*(+x.dataset.z>0?1.25:.8)));renderReader()});
+  $("#pgin").onchange=e=>openPage(LB.cur.id,num(e.target.value,1));
+  const task=++readerTask;
+  try{const doc=await getDoc(LB.cur.id);const pg=await doc.getPage(LB.cur.page);if(task!==readerTask)return;
+    const wrap=$("#pagewrap");const vp0=pg.getViewport({scale:1});const fit=(wrap.clientWidth-8)/vp0.width;const scale=fit*LB.zoom;const dpr=window.devicePixelRatio||1;
+    const vp=pg.getViewport({scale:scale*dpr});const cv=document.createElement("canvas");cv.width=Math.floor(vp.width);cv.height=Math.floor(vp.height);cv.style.width=Math.floor(vp.width/dpr)+"px";cv.style.height=Math.floor(vp.height/dpr)+"px";
+    await pg.render({canvasContext:cv.getContext("2d"),viewport:vp}).promise;if(task!==readerTask)return;wrap.innerHTML="";wrap.appendChild(cv);
+  }catch(e){console.warn(e);const w=$("#pagewrap");if(w)w.innerHTML=`<div class="faint" style="padding:30px">Die Seite ließ sich nicht anzeigen.</div>`}
+}
+document.addEventListener("keydown",e=>{if(TAB==="lib"&&LB.cur&&!isEditing(document.body)){if(e.key==="ArrowRight")openPage(LB.cur.id,LB.cur.page+1);if(e.key==="ArrowLeft")openPage(LB.cur.id,LB.cur.page-1)}
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();showTab("lib");setTimeout(()=>$("#libq")?.focus(),20)}});
+
+/* ======================= Sicherung ======================= */
+function blobToDataURL(b){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(b)})}
+async function dataURLToBlob(d){return await (await fetch(d)).blob()}
+async function exportData(){
+  flushChar();flushNote();const btn=$("#exportBtn");btn.disabled=true;btn.textContent="Wird vorbereitet …";
+  try{
+    const out={app:"logbuch-der-lok",format:1,exported:new Date().toISOString(),chars:Object.fromEntries(S.chars),notes:Object.fromEntries(S.notes),media:{},combat:S.combat,screen:S.screen,blobs:{}};
+    for(const[id,m]of S.media){const mm=clone(m);let blob=null;
+      try{if(m.assetId)blob=await (await fetch("/_blob/"+m.assetId)).blob();else if(m.blobId&&LDB.db)blob=await ldbGet("blobs",m.blobId)}catch{}
+      if(blob){const key=m.assetId||m.blobId;out.blobs[key]=await blobToDataURL(blob);mm.blobId=key;delete mm.assetId}
+      out.media[id]=mm}
+    const data=new Blob([JSON.stringify(out)],{type:"application/json"}),name=`logbuch-der-lok-${new Date().toISOString().slice(0,10)}.json`;
+    if(S.mode==="db"){const dl=await window.claude.use("downloads");if(!dl){toast("Herunterladen ist in dieser Ansicht nicht möglich.");return}
+      try{await dl.save({filename:name,data})}catch(e){if(e&&e.code&&!/cancel|declin|abort/i.test(e.code))toast("Die Sicherung ließ sich nicht speichern.")}}
+    else{const a=document.createElement("a");a.href=URL.createObjectURL(data);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)}
+  }catch(e){console.warn(e);toast("Die Sicherung ließ sich nicht erstellen.")}
+  finally{btn.disabled=false;btn.textContent="Sicherung herunterladen"}
+}
+async function importData(file){
+  let o;try{o=JSON.parse(await file.text())}catch{toast("Diese Datei ist keine gültige Sicherung.");return}
+  if(!o||o.app!=="logbuch-der-lok"){toast("Diese Datei ist keine Sicherung des Logbuchs der Lok.");return}
+  if(!LDB.db){toast("Ohne dauerhaften Speicher kann keine Sicherung eingespielt werden.");return}
+  for(const[k,d]of Object.entries(o.blobs||{})){try{await ldbWrite("blobs",k,await dataURLToBlob(d))}catch{}}
+  for(const col of ["chars","notes","media"])for(const[k,v]of Object.entries(o[col]||{}))await ldbWrite(col,k,v);
+  if(o.combat)await ldbWrite("state","combat",o.combat);if(o.screen)await ldbWrite("state","screen",o.screen);
+  CH.work=null;NT.work=null;await localReload("*");try{bc&&bc.postMessage({path:"*"})}catch{}
+  const n=Object.keys(o.chars||{}).length,m=Object.keys(o.notes||{}).length,k=Object.keys(o.media||{}).length;
+  $("#dataInfo").textContent=`Eingespielt: ${n} Charaktere, ${m} Notizen, ${k} Bilder und Karten.`;renderTab(TAB);
+}
+$("#dataBtn").onclick=()=>{const p=$("#datapop");p.hidden=!p.hidden;$("#dataBtn").setAttribute("aria-expanded",String(!p.hidden));
+  $("#dataInfo").textContent=S.mode==="db"?"Lade eine Sicherung herunter, um deine Charaktere, Notizen, Kämpfe und Bilder in die installierte App auf deinem Rechner zu übernehmen.":"Deine Daten liegen auf diesem Rechner. Lade ab und zu eine Sicherung herunter, damit nichts verloren geht, wenn der Browser-Speicher geleert wird.";
+  $("#importLbl").hidden=S.mode==="db";$("#importInfo").hidden=S.mode==="db";$("#verInfo").textContent=OFFLINE?"Version "+APP_VERSION:""};
+$("#exportBtn").onclick=exportData;
+$("#importIn").onchange=e=>{const f=e.target.files[0];if(f)importData(f);e.target.value=""};
+document.addEventListener("click",e=>{const p=$("#datapop");if(!p.hidden&&!p.contains(e.target)&&e.target!==$("#dataBtn")){p.hidden=true;$("#dataBtn").setAttribute("aria-expanded","false")}});
+
+/* ======================= Würfel-UI ======================= */
+const drawer=$("#drawer");
+$("#diceBtn").onclick=()=>{drawer.classList.toggle("open");$("#diceBtn").setAttribute("aria-expanded",String(drawer.classList.contains("open")))};
+$("#diceClose").onclick=()=>{drawer.classList.remove("open");$("#diceBtn").setAttribute("aria-expanded","false")};
+$$("[data-adv]").forEach(b=>b.onclick=()=>setAdv(b.dataset.adv));
+$$("[data-die]").forEach(b=>b.onclick=()=>{const d=b.dataset.die;if(d==="d20")d20("W20",0);else rollExpr(d.replace(/d/,"W").toUpperCase(),d)});
+$("#exprForm").onsubmit=e=>{e.preventDefault();const v=$("#expr").value.trim();if(v)rollExpr(v,v)};
+$("#clearLog").onclick=()=>{Dice.log=[];lsSet("dz-log",[]);renderLog()};
+$("#rollToScreen").checked=!!lsGet("dz-r2s");
+$("#rollToScreen").onchange=e=>{lsSet("dz-r2s",e.target.checked);const o=$("#oRoll");if(o)o.checked=e.target.checked};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(PV.on&&PV.fromDm)closePlayer();else if(drawer.classList.contains("open"))$("#diceClose").click()}});
+window.addEventListener("beforeunload",()=>{flushChar();flushNote()});
+
+/* ======================= Start ======================= */
+renderLog();
+const asPlayer=location.hash.replace("#","").toLowerCase()==="leinwand";
+if(asPlayer){openPlayer(false);$("#topbar").hidden=true}
+showTab(["chars","init","notes","screen","lib"].includes(TAB)?TAB:"chars");
+if(!asPlayer)setTimeout(libInit,1500);
+boot();
+</script>
+
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
+</script>
+</body></html>
