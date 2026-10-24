@@ -268,6 +268,49 @@ h2.sec{font-family:var(--f-display);font-weight:400;font-size:1.28rem;margin:0;l
 .toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:.92rem}
 .toggle input{width:auto}
 
+/* ---------- Sessions ---------- */
+.sess-wrap{display:grid;grid-template-columns:280px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.sess-wrap{grid-template-columns:minmax(0,1fr)}}
+.sview{padding:22px 26px;display:flex;flex-direction:column;gap:14px;min-width:0}
+@media (max-width:600px){.sview{padding:16px}}
+.sview h1{font-family:var(--f-display);font-weight:400;font-size:2.1rem;margin:0;line-height:1.1;text-wrap:balance}
+.md{max-width:80ch;line-height:1.6;font-size:1rem;min-width:0}
+.md h2{font-family:var(--f-display);font-weight:400;font-size:1.5rem;margin:0;color:var(--brass);text-wrap:balance}
+.md h3{font-family:var(--f-display);font-weight:400;font-size:1.18rem;margin:1.1em 0 .25em;text-wrap:balance}
+.md p{margin:.5em 0}
+.md ul,.md ol{margin:.4em 0;padding-left:1.4em}
+.md li{margin:.25em 0}
+.md blockquote{margin:.8em 0;padding:.6em 1em;border-left:3px solid var(--arcane);background:var(--arcane-soft);font-family:var(--f-italic);font-style:italic;font-size:1.05rem;border-radius:0 6px 6px 0}
+.md hr{border:0;border-top:1px solid var(--line);margin:1em 0}
+.tblwrap{overflow-x:auto;margin:.6em 0}
+.md table{border-collapse:collapse;width:100%;font-size:.92rem}
+.md th,.md td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+.md th{background:var(--surface-2);font-weight:700}
+.md code{font-family:var(--f-mono);font-size:.85em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+.md a{color:var(--arcane)}
+.msec{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
+.msec-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cbtn{margin-left:auto;font-size:.8rem;border:1px solid var(--line);background:none;border-radius:999px;padding:3px 11px;cursor:pointer;color:var(--fg-dim);white-space:nowrap}
+.cbtn:hover{border-color:var(--brass);color:var(--fg)}
+.cbtn.has{border-color:var(--brass);color:var(--fg);background:var(--brass-soft)}
+.cthread{margin:10px 0 6px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);display:flex;flex-direction:column;gap:8px;max-width:80ch}
+.cm{display:flex;flex-direction:column;gap:2px;padding:7px 9px;border-radius:6px;background:var(--surface)}
+.cm.done{opacity:.55}
+.cm .who{font-size:.76rem;color:var(--fg-faint);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cm .who b{color:var(--fg-dim)}
+.cm .txt{white-space:pre-wrap;font-size:.94rem;overflow-wrap:anywhere}
+.cform{display:flex;flex-direction:column;gap:6px}
+.cform textarea{min-height:64px}
+.linkbtn{background:none;border:0;padding:0;color:var(--arcane);cursor:pointer;font:inherit;text-decoration:underline}
+.sstrip{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.sthumb{flex:0 0 160px;aspect-ratio:16/9;border-radius:6px;background:var(--surface-2) center/cover no-repeat;border:1px solid var(--line);cursor:pointer;position:relative;padding:0;max-width:100%}
+.sthumb:hover{border-color:var(--brass)}
+.sthumb span{position:absolute;left:0;right:0;bottom:0;font-size:.72rem;background:rgba(0,0,0,.7);color:#fff;padding:2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:0 0 5px 5px}
+.sthumb.live{outline:2px solid var(--arcane);outline-offset:2px}
+.libgrp{grid-column:1/-1;font-family:var(--f-display);font-size:1.15rem;margin-top:6px;display:flex;gap:10px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:4px}
+.libgrp span{font-family:var(--f-body);font-size:.8rem;color:var(--fg-faint)}
+.editor-md{min-height:62vh;font-family:var(--f-mono);font-size:.88rem;line-height:1.55}
+
 /* ---------- Bibliothek ---------- */
 .lib-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:start}
 @media (max-width:1000px){.lib-wrap{grid-template-columns:minmax(0,1fr)}}
@@ -373,6 +416,7 @@ mark{background:var(--brass-soft);color:var(--fg);box-shadow:inset 0 -2px 0 var(
   <nav class="tabs" role="tablist" aria-label="Bereiche">
     <button class="tab" role="tab" data-tab="chars" aria-selected="true">Charaktere</button>
     <button class="tab" role="tab" data-tab="init">Initiative</button>
+    <button class="tab" role="tab" data-tab="sess">Sessions</button>
     <button class="tab" role="tab" data-tab="notes">Notizen</button>
     <button class="tab" role="tab" data-tab="screen">Leinwand</button>
     <button class="tab" role="tab" data-tab="lib">Bibliothek</button>
@@ -390,6 +434,7 @@ mark{background:var(--brass-soft);color:var(--fg);box-shadow:inset 0 -2px 0 var(
 <main>
   <section class="view" id="v-chars"></section>
   <section class="view" id="v-init" hidden></section>
+  <section class="view" id="v-sess" hidden></section>
   <section class="view" id="v-notes" hidden></section>
   <section class="view" id="v-screen" hidden></section>
   <section class="view" id="v-lib" hidden></section>
@@ -519,28 +564,28 @@ function setAdv(v){Dice.adv=v;$$("[data-adv]").forEach(b=>b.setAttribute("aria-p
 const DEL={};
 const DEF_COMBAT=()=>({round:1,turnId:null,list:[]});
 const DEF_SCREEN=()=>({mode:"title",title:"Willkommen am Tisch",subtitle:"Die Geschichte beginnt",mediaId:null,noteId:null,showInit:false,showGrid:false,roll:null});
-const S={mode:"init",db:null,assets:null,chars:new Map(),notes:new Map(),media:new Map(),combat:DEF_COMBAT(),screen:DEF_SCREEN(),subs:[],pending:{}};
+const S={mode:"init",db:null,assets:null,chars:new Map(),notes:new Map(),media:new Map(),sessions:new Map(),combat:DEF_COMBAT(),screen:DEF_SCREEN(),subs:[],pending:{}};
 function emit(what){S.subs.forEach(f=>{try{f(what)}catch(e){console.error(e)}})}
 let bc=null;try{bc=new BroadcastChannel("dungeon-zentrale")}catch{}
 const OFFLINE=!!window.LOK_OFFLINE;
 const APP_VERSION=window.LOK_VERSION||"online";
 const LDB={db:null,urls:new Map()};
-function ldbOpen(){return new Promise(res=>{try{const rq=indexedDB.open("lok-daten",1);rq.onupgradeneeded=()=>{const d=rq.result;["chars","notes","media","state","blobs"].forEach(n=>{if(!d.objectStoreNames.contains(n))d.createObjectStore(n)})};rq.onsuccess=()=>res(rq.result);rq.onerror=()=>res(null);rq.onblocked=()=>res(null)}catch{res(null)}})}
+function ldbOpen(){return new Promise(res=>{try{const rq=indexedDB.open("lok-daten",2);rq.onupgradeneeded=()=>{const d=rq.result;["chars","notes","media","state","blobs","sessions"].forEach(n=>{if(!d.objectStoreNames.contains(n))d.createObjectStore(n)})};rq.onsuccess=()=>res(rq.result);rq.onerror=()=>res(null);rq.onblocked=()=>res(null)}catch{res(null)}})}
 function ldbGet(st,k){return new Promise(res=>{try{const r=LDB.db.transaction(st).objectStore(st).get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>res(undefined)}catch{res(undefined)}})}
 function ldbWrite(st,k,v){return new Promise(res=>{try{const t=LDB.db.transaction(st,"readwrite");v===DEL?t.objectStore(st).delete(k):t.objectStore(st).put(v,k);t.oncomplete=()=>res(true);t.onerror=t.onabort=()=>res(false)}catch{res(false)}})}
 function ldbEntries(st){return new Promise(res=>{const out=[];try{const c=LDB.db.transaction(st).objectStore(st).openCursor();c.onsuccess=()=>{const cur=c.result;if(cur){out.push([String(cur.key),cur.value]);cur.continue()}else res(out)};c.onerror=()=>res(out)}catch{res(out)}})}
 async function loadBlobUrls(){if(!LDB.db)return;for(const m of S.media.values())if(m.blobId&&!LDB.urls.has(m.blobId)){const b=await ldbGet("blobs",m.blobId);if(b)LDB.urls.set(m.blobId,URL.createObjectURL(b))}}
 async function localLoadAll(){
   if(!LDB.db){S.chars=new Map();S.notes=new Map();S.media=new Map();S.combat=DEF_COMBAT();S.screen=DEF_SCREEN();return}
-  for(const col of ["chars","notes","media"])S[col]=new Map(await ldbEntries(col));
+  for(const col of ["chars","notes","media","sessions"])S[col]=new Map(await ldbEntries(col));
   const st=new Map(await ldbEntries("state"));S.combat=st.get("combat")||DEF_COMBAT();S.screen=st.get("screen")||DEF_SCREEN();
   await loadBlobUrls();
 }
 async function migrateOldLocal(){const o=lsGet("dz-data");if(!o||!LDB.db)return;if((await ldbEntries("chars")).length||(await ldbEntries("notes")).length)return;
-  for(const col of ["chars","notes","media"])for(const[k,v]of Object.entries(o[col]||{}))await ldbWrite(col,k,v);
+  for(const col of ["chars","notes","media","sessions"])for(const[k,v]of Object.entries(o[col]||{}))await ldbWrite(col,k,v);
   if(o.combat)await ldbWrite("state","combat",o.combat);if(o.screen)await ldbWrite("state","screen",o.screen);try{localStorage.removeItem("dz-data")}catch{}}
 async function localReload(path){
-  if(path==="*"){await localLoadAll();["chars","notes","media","combat","screen"].forEach(emit);return}
+  if(path==="*"){await localLoadAll();["chars","notes","media","sessions","combat","screen"].forEach(emit);return}
   const[col,id]=path.split("/");
   if(col==="state"){S[id]=(await ldbGet("state",id))||(id==="combat"?DEF_COMBAT():DEF_SCREEN());emit(id);return}
   const v=await ldbGet(col,id);if(v)S[col].set(id,v);else S[col].delete(id);if(col==="media")await loadBlobUrls();emit(col);
@@ -563,7 +608,7 @@ function put(col,id,obj){S[col].set(id,obj);emit(col);persist(col+"/"+id,obj)}
 function del(col,id){S[col].delete(id);emit(col);persist(col+"/"+id,DEL)}
 function setState(name,obj){S[name]=obj;emit(name);persist("state/"+name,obj)}
 function subscribeDb(){
-  for(const col of ["chars","notes","media"]){
+  for(const col of ["chars","notes","media","sessions"]){
     S.db.collection(col).onSnapshot(snap=>{
       let changed=false;
       for(const ch of snap.docChanges()){const id=ch.doc.id;if(S.pending[col+"/"+id])continue;
@@ -589,14 +634,14 @@ async function boot(){
     sync.title=OFFLINE?"Alles wird auf diesem Rechner gespeichert, auch ohne Internet. Lade ab und zu eine Sicherung herunter.":"Daten liegen nur in diesem Browser. Die Leinwand funktioniert in einem zweiten Fenster desselben Browsers.";
     if(!LDB.db)toast("Der Browser erlaubt hier keinen dauerhaften Speicher. Änderungen gehen beim Schließen verloren.");
     if(bc)bc.onmessage=e=>{const p=e.data&&e.data.path;if(p)localReload(p)};
-    ["chars","notes","media","combat","screen"].forEach(emit);}
+    ["chars","notes","media","sessions","combat","screen"].forEach(emit);}
 }
 
 /* ======================= Navigation ======================= */
 let TAB=lsGet("dz-tab")||"chars";
 function showTab(t){TAB=t;lsSet("dz-tab",t);$$(".tab").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));
   $$(".view").forEach(v=>v.hidden=v.id!=="v-"+t);renderTab(t)}
-function renderTab(t){if(t==="lib"){libInit().then(()=>renderLib());return}({chars:renderChars,init:renderInit,notes:renderNotes,screen:renderScreen})[t]()}
+function renderTab(t){if(t==="lib"){libInit().then(()=>renderLib());return}({chars:renderChars,init:renderInit,sess:renderSess,notes:renderNotes,screen:renderScreen})[t]()}
 $$(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 
 /* ======================= Charaktere ======================= */
@@ -854,6 +899,84 @@ $("#v-init").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches
 $("#v-init").addEventListener("focusout",()=>setTimeout(()=>{if(initPendingRender&&!isEditing($("#v-init")))renderInit()},0));
 S.subs.push(w=>{if((w==="combat"||w==="chars"||w==="screen")&&TAB==="init")renderInit()});
 
+/* ======================= Sessions ======================= */
+const SE={sel:lsGet("dz-ssel"),edit:false,work:null,dirty:0,open:null,me:lsGet("dz-me")||""};
+function sslug(t){return String(t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,60)||"abschnitt"}
+function mdInline(t){let h=esc(t);
+  h=h.replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").replace(/(^|[^*\w])\*([^*\s][^*]*?)\*(?!\*)/g,"$1<em>$2</em>").replace(/\[([^\]]+)\]\((https?:\/\/[^)\s"]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');return h}
+function mdTask(t){const m=t.match(/^\[( |x|X)\]\s+(.*)$/);return m?`<input type="checkbox" disabled ${m[1]!==" "?"checked":""}> ${mdInline(m[2])}`:mdInline(t)}
+function mdSections(src){const L=String(src||"").replace(/\r/g,"").split("\n"),secs=[{sec:"",title:"",html:""}],used={};let cur=secs[0],i=0;const out=h=>{cur.html+=h};
+  const blockStart=/^(#{1,3}\s|\s*>|\s*\||\s*[-*]\s+|\s*\d+\.\s+|\s*(---|\*\*\*)\s*$)/;
+  while(i<L.length){const l=L[i];
+    if(/^##\s+/.test(l)){const title=l.replace(/^##\s+/,"").trim();let sl=sslug(title);used[sl]=(used[sl]||0)+1;if(used[sl]>1)sl+="-"+used[sl];cur={sec:sl,title,html:""};secs.push(cur);i++;continue}
+    if(/^###\s+/.test(l)){out(`<h3>${mdInline(l.replace(/^###\s+/,""))}</h3>`);i++;continue}
+    if(/^#\s+/.test(l)){out(`<h3>${mdInline(l.replace(/^#\s+/,""))}</h3>`);i++;continue}
+    if(/^\s*>/.test(l)){const b=[];while(i<L.length&&/^\s*>/.test(L[i])){b.push(L[i].replace(/^\s*>\s?/,""));i++}out(`<blockquote>${b.map(mdInline).join("<br>")}</blockquote>`);continue}
+    if(/^\s*\|/.test(l)){const rows=[];while(i<L.length&&/^\s*\|/.test(L[i])){rows.push(L[i].trim().replace(/^\|/,"").replace(/\|$/,"").split("|").map(c=>c.trim()));i++}
+      const hh=rows.length>1&&rows[1].every(c=>/^:?-{2,}:?$/.test(c)),head=hh?rows[0]:null,body=hh?rows.slice(2):rows;
+      out(`<div class="tblwrap"><table>${head?`<thead><tr>${head.map(c=>`<th>${mdInline(c)}</th>`).join("")}</tr></thead>`:""}<tbody>${body.map(r=>`<tr>${r.map(c=>`<td>${mdInline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`);continue}
+    if(/^\s*[-*]\s+/.test(l)){const it=[];while(i<L.length&&/^\s*[-*]\s+/.test(L[i])){it.push(L[i].replace(/^\s*[-*]\s+/,""));i++}out(`<ul>${it.map(x=>`<li>${mdTask(x)}</li>`).join("")}</ul>`);continue}
+    if(/^\s*\d+\.\s+/.test(l)){const it=[];while(i<L.length&&/^\s*\d+\.\s+/.test(L[i])){it.push(L[i].replace(/^\s*\d+\.\s+/,""));i++}out(`<ol>${it.map(x=>`<li>${mdInline(x)}</li>`).join("")}</ol>`);continue}
+    if(/^\s*(---|\*\*\*)\s*$/.test(l)){out("<hr>");i++;continue}
+    if(!l.trim()){i++;continue}
+    const pp=[];while(i<L.length&&L[i].trim()&&!blockStart.test(L[i])){pp.push(L[i]);i++}out(`<p>${pp.map(mdInline).join("<br>")}</p>`)}
+  return secs}
+const saveSessSoon=debounce(()=>flushSess(),700);
+function flushSess(){if(SE.dirty&&SE.work&&SE.sel){SE.work.updated=Date.now();const o=clone(SE.work);delete o._id;put("sessions",SE.sel,o);SE.dirty=0}}
+function sessSorted(){return[...S.sessions.entries()].sort((a,b)=>String(b[1].date||"9999").localeCompare(String(a[1].date||"9999"))||num(b[1].created)-num(a[1].created))}
+function sessMedia(id){return[...S.media.entries()].filter(([,m])=>m.session===id).sort((a,b)=>num(b[1].created)-num(a[1].created))}
+function fmtDate(d){if(!d)return"Termin offen";const[y,m,dd]=d.split("-");return`${+dd}.${+m}.${y}`}
+function renderSess(){
+  const v=$("#v-sess");
+  if(!v.querySelector(".sess-wrap")){v.innerHTML=`<div class="sess-wrap"><div><div class="list-head"><h2 class="sec" style="flex:1">Sessions</h2><button class="btn primary sm" id="addSess">+ Session</button></div><div class="list" id="slist"></div></div><div class="panel" id="sbox"></div></div>`;
+    $("#addSess").onclick=()=>{flushSess();const id=uid();put("sessions",id,{title:"Neue Session",date:"",body:"## Überblick\n\nWorum geht es in dieser Session?\n\n## Ablauf\n\n1. Erste Szene\n2. Zweite Szene\n",comments:[],created:Date.now(),updated:Date.now()});SE.sel=id;lsSet("dz-ssel",id);SE.work=null;SE.edit=true;renderSess();setTimeout(()=>{const t=$("#stitle");t&&(t.focus(),t.select())},30)}}
+  if(!S.sessions.has(SE.sel)){SE.sel=sessSorted()[0]?.[0]||null;SE.work=null}
+  renderSessList();
+  const box=$("#sbox");
+  if(!SE.sel){box.innerHTML=`<div class="empty"><h3>Noch keine Sessions</h3><p>Hier sammelst du die Pläne für jede Spielrunde. Jede Session lässt sich bearbeiten und abschnittsweise kommentieren, und ihre Bilder liegen in der Leinwand beisammen.</p><button class="btn primary" id="firstSess">Erste Session anlegen</button></div>`;$("#firstSess").onclick=()=>$("#addSess").click();return}
+  if(SE.work&&SE.work._id===SE.sel&&(SE.dirty||isEditing(box)))return;
+  SE.work=Object.assign({title:"",date:"",body:"",comments:[]},clone(S.sessions.get(SE.sel)),{_id:SE.sel});
+  SE.edit?renderSessEdit():renderSessRead();
+}
+function renderSessList(){const l=$("#slist");if(!l)return;
+  l.innerHTML=sessSorted().map(([id,x])=>{const open=(x.comments||[]).filter(c=>!c.done).length,n=sessMedia(id).length;return`<button class="nitem" data-id="${id}" aria-current="${id===SE.sel}"><span class="cat">${esc(fmtDate(x.date))}</span><span class="n">${esc(x.title||"Ohne Titel")}</span><span class="p">${n} ${n===1?"Bild":"Bilder"}${open?` · ${open} offene Kommentare`:""}</span></button>`}).join("")||`<div class="faint" style="padding:10px">Noch keine Sessions.</div>`;
+  l.onclick=e=>{const b=e.target.closest(".nitem");if(!b)return;flushSess();SE.sel=b.dataset.id;lsSet("dz-ssel",SE.sel);SE.work=null;SE.edit=false;SE.open=null;renderSess()}}
+function commentHtml(c){return`<div class="cm ${c.done?"done":""}"><div class="who"><b>${esc(c.by||"Jemand")}</b><span>${new Date(c.t).toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"})}</span><span class="spacer"></span><button class="btn ghost sm" data-cdone="${c.id}">${c.done?"Wieder öffnen":"Erledigt"}</button><button class="btn ghost sm danger" data-cdel="${c.id}" aria-label="Kommentar löschen">×</button></div><div class="txt">${esc(c.text)}</div></div>`}
+function threadHtml(sec,list){return`<div class="cthread">${list.map(commentHtml).join("")||`<div class="faint" style="font-size:.85rem">Noch keine Kommentare${sec?" zu diesem Abschnitt":""}.</div>`}<div class="cform">${SE.me?"":`<input class="cname" placeholder="Dein Name" aria-label="Dein Name">`}<textarea class="ctext" placeholder="Kommentar schreiben …" aria-label="Kommentar"></textarea><div class="row"><span class="faint" style="font-size:.78rem">${SE.me?`als ${esc(SE.me)} · <button class="linkbtn" data-cme>ändern</button>`:""}</span><span class="spacer"></span><button class="btn primary sm" data-cadd="${esc(sec)}">Kommentieren</button></div></div></div>`}
+function renderSessRead(){
+  const x=SE.work,box=$("#sbox"),secs=mdSections(x.body),known=new Set(secs.filter(q=>q.sec).map(q=>q.sec)),cs=x.comments||[];
+  const general=cs.filter(c=>!c.sec||!known.has(c.sec));const med=sessMedia(SE.sel),liveId=(S.screen.mode==="image"||S.screen.mode==="map")?S.screen.mediaId:null;
+  box.innerHTML=`<div class="sview">
+   <div class="row"><span class="cat">${esc(fmtDate(x.date))}</span><span class="spacer"></span><button class="btn sm" data-sact="imgs">Bilder in der Leinwand (${med.length})</button><button class="btn primary sm" data-sact="edit">Bearbeiten</button><button class="btn danger sm" data-sact="del">Löschen</button></div>
+   <h1>${esc(x.title||"Ohne Titel")}</h1>
+   ${med.length?`<div class="block"><span class="label">Bildkarten · Klick zeigt das Bild auf der Leinwand</span><div class="sstrip">${med.map(([id,m])=>`<button class="sthumb ${liveId===id?"live":""}" data-sshow="${id}" style="background-image:url('${esc(mediaSrc(m))}')" title="${esc(m.name)}"><span>${esc(m.name)}</span></button>`).join("")}</div></div>`:""}
+   <div class="md">${secs.map(q=>{if(!q.sec)return q.html;const list=cs.filter(c=>c.sec===q.sec),open=list.filter(c=>!c.done).length;return`<section class="msec"><div class="msec-h"><h2>${mdInline(q.title)}</h2><button class="cbtn ${open?"has":""}" data-csec="${q.sec}" aria-expanded="${SE.open===q.sec}">${list.length?`Kommentare (${list.length}${open&&open<list.length?`, ${open} offen`:""})`:"Kommentieren"}</button></div>${SE.open===q.sec?threadHtml(q.sec,list):""}${q.html}</section>`}).join("")}
+   <section class="msec"><div class="msec-h"><h2>Allgemeine Kommentare</h2></div>${threadHtml("",general)}</section></div></div>`;
+}
+function renderSessEdit(){const x=SE.work,box=$("#sbox");
+  box.innerHTML=`<div class="sview"><div class="row"><span class="faint" style="font-size:.85rem">Änderungen werden automatisch gespeichert</span><span class="spacer"></span><button class="btn primary sm" data-sact="done">Fertig</button></div>
+   <div class="row"><input id="stitle" value="${esc(x.title)}" placeholder="Titel der Session" aria-label="Titel" style="font-family:var(--f-display);font-size:1.6rem;flex:1 1 260px"><div class="field" style="width:170px"><span class="label">Spieltermin</span><input type="date" id="sdate" value="${esc(x.date||"")}"></div></div>
+   <p class="howto" style="margin:0">Formatierung: <code>## Abschnitt</code> (bekommt eigene Kommentare), <code>### Unterabschnitt</code>, <code>- Liste</code>, <code>1. Schritt</code>, <code>**fett**</code>, <code>&gt; Vorlesetext</code>, Tabellen mit <code>| Spalte | Spalte |</code></p>
+   <textarea id="sbody" class="editor-md" aria-label="Inhalt der Session">${esc(x.body)}</textarea></div>`;
+  const ch=()=>{SE.dirty=1;saveSessSoon();const o=Object.assign({},SE.work);delete o._id;S.sessions.set(SE.sel,o);renderSessList()};
+  $("#stitle").oninput=e=>{x.title=e.target.value;ch()};$("#sdate").onchange=e=>{x.date=e.target.value;ch()};$("#sbody").oninput=e=>{x.body=e.target.value;ch()}}
+$("#v-sess").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||!SE.work)return;const x=SE.work;
+  const commit=()=>{SE.dirty=1;flushSess();renderSessRead();renderSessList()};
+  if(b.dataset.sact==="edit"){SE.edit=true;renderSessEdit();return}
+  if(b.dataset.sact==="done"){flushSess();SE.edit=false;SE.work=null;renderSess();return}
+  if(b.dataset.sact==="imgs"){SC.sf=SE.sel;lsSet("dz-sfilter",SC.sf);showTab("screen");return}
+  if(b.dataset.sact==="del"){if(!b.classList.contains("armed")){b.classList.add("armed");b.textContent="Wirklich löschen?";setTimeout(()=>{b.classList.remove("armed");b.textContent="Löschen"},3000);return}
+    SE.dirty=0;del("sessions",SE.sel);SE.sel=null;SE.work=null;renderSess();return}
+  if(b.dataset.sshow){const m=S.media.get(b.dataset.sshow);if(m)setState("screen",Object.assign({},S.screen,{mode:m.kind==="map"?"map":"image",mediaId:b.dataset.sshow}));$$("#sbox .sthumb").forEach(t=>t.classList.toggle("live",t===b));return}
+  if(b.dataset.csec!=null){SE.open=SE.open===b.dataset.csec?null:b.dataset.csec;renderSessRead();return}
+  if(b.hasAttribute("data-cme")){SE.me="";lsSet("dz-me","");renderSessRead();return}
+  if(b.dataset.cadd!=null){const f=b.closest(".cform"),t=f.querySelector(".ctext").value.trim();if(!t){f.querySelector(".ctext").focus();return}const nm=f.querySelector(".cname");if(nm&&nm.value.trim()){SE.me=nm.value.trim();lsSet("dz-me",SE.me)}
+    x.comments=[...(x.comments||[]),{id:uid(),sec:b.dataset.cadd,text:t,by:SE.me||"Spielleitung",t:Date.now(),done:false}];if(b.dataset.cadd)SE.open=b.dataset.cadd;commit();return}
+  if(b.dataset.cdone){const c=(x.comments||[]).find(c=>c.id===b.dataset.cdone);if(c){c.done=!c.done;commit()}return}
+  if(b.dataset.cdel){if(!b.classList.contains("armed")){b.classList.add("armed");b.textContent="Löschen?";setTimeout(()=>{b.classList.remove("armed");b.textContent="×"},3000);return}x.comments=(x.comments||[]).filter(c=>c.id!==b.dataset.cdel);commit();return}
+});
+S.subs.push(w=>{if((w==="sessions"||w==="media"||w==="screen")&&TAB==="sess"&&!SE.edit)renderSess();else if(w==="sessions"&&TAB==="sess")renderSessList()});
+
 /* ======================= Notizen ======================= */
 const NCATS=["Sitzung","NSC","Ort","Quest","Gegenstand","Lore","Sonstiges"];
 const NT={sel:lsGet("dz-nsel"),cat:"Alle",q:"",work:null,dirty:0};
@@ -900,7 +1023,7 @@ function renderNoteList(){
 S.subs.push(w=>{if(w==="notes"&&TAB==="notes")renderNotes()});
 
 /* ======================= Leinwand-Steuerung ======================= */
-const SC={sel:lsGet("dz-msel"),tool:"reveal",brush:1,tokSel:null,color:"#c0392b",fog:null,fogFor:null};
+const SC={sf:lsGet("dz-sfilter")||"all",sel:lsGet("dz-msel"),tool:"reveal",brush:1,tokSel:null,color:"#c0392b",fog:null,fogFor:null};
 const TCOLORS=["#c0392b","#2e86de","#27ae60","#8e44ad","#e67e22","#16a085","#7f8c8d","#d4ac0d"];
 function fogArr(m){const n=m.cols*m.rows;let s=m.fog||"";if(s.length!==n)s="0".repeat(n);return Uint8Array.from(s,c=>c==="1"?1:0)}
 function fogStr(a){let s="";for(let i=0;i<a.length;i++)s+=a[i]?"1":"0";return s}
@@ -918,9 +1041,9 @@ function renderScreen(){
    ${m?mapEditorHtml(m):""}
    <div class="panel" style="padding:14px;display:flex;flex-direction:column;gap:12px">
      <div class="row"><h2 class="sec" style="flex:1">Karten & Bilder</h2><span class="faint" style="font-size:.82rem">${S.mode==="db"?(S.assets?"Bilder werden mit der App gespeichert":"Bilder werden verkleinert gespeichert"):LDB.db?"Bilder werden auf diesem Rechner gespeichert":"Bilder werden verkleinert im Browser gespeichert"}</span></div>
-     <label class="dropzone" id="drop"><input type="file" accept="image/*" multiple id="upl" hidden><b>Bilder hochladen</b><span style="font-size:.88rem">Battlemaps, Szenenbilder, Porträts – hierher ziehen oder klicken</span></label>
-     <div class="lib">${media.map(([id,x])=>`<div class="media" aria-current="${id===SC.sel}"><div class="thumb" data-msel="${id}" style="background-image:url('${esc(mediaSrc(x))}')"><span class="badge">${x.kind==="map"?"Karte":"Bild"}</span>${(s.mode==="map"||s.mode==="image")&&s.mediaId===id?'<span class="badge onair">Live</span>':""}</div>
-       <div class="meta"><input value="${esc(x.name)}" data-mname="${id}" aria-label="Name"><input value="${esc(x.sub||"")}" data-msub="${id}" placeholder="Untertitel (optional)" aria-label="Untertitel"><div class="row" style="gap:4px"><button class="btn primary sm" data-mshow="${id}">Zeigen</button><button class="btn sm" data-mkind="${id}" title="Als Karte mit Raster & Nebel oder als einfaches Bild">${x.kind==="map"?"→ Bild":"→ Karte"}</button><button class="btn ghost sm danger" data-mdel="${id}" aria-label="Löschen">×</button></div></div></div>`).join("")||`<div class="faint" style="grid-column:1/-1;font-size:.9rem">Noch keine Bilder. Lade eine Battlemap hoch, um Nebel des Krieges und Spielfiguren zu nutzen.</div>`}</div>
+     <label class="dropzone" id="drop"><input type="file" accept="image/*" multiple id="upl" hidden><b>Bilder hochladen</b><span style="font-size:.88rem">${SC.sf!=="all"&&SC.sf!=="none"&&S.sessions.has(SC.sf)?`Neue Bilder landen in „${esc(S.sessions.get(SC.sf).title||"Ohne Titel")}“`:"Szenenbilder, Porträts, Battlemaps – hierher ziehen oder klicken"}</span></label>
+     <div class="cats" id="sfilt">${[["all","Alle"],...sessSorted().map(([sid,ss])=>[sid,ss.title||"Ohne Titel"]),["none","Ohne Session"]].map(([k,l])=>`<button class="chip" data-sf="${k}" aria-pressed="${SC.sf===k}">${esc(l)}</button>`).join("")}</div>
+     <div class="lib">${libHtml(media,s)}</div>
    </div></div>
    <div class="side">
      <div class="panel"><h2 class="sec">Großer Bildschirm</h2>
@@ -1022,6 +1145,7 @@ $("#v-screen").addEventListener("click",e=>{
   if(b.dataset.brush){SC.brush=+b.dataset.brush;$$("[data-brush]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));return}
   if(b.dataset.fog){const mm=clone(S.media.get(SC.sel));mm.fog=(b.dataset.fog==="all1"?"1":"0").repeat(mm.cols*mm.rows);put("media",SC.sel,mm);return}
   if(b.dataset.col){SC.color=b.dataset.col;$$("[data-col]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));return}
+  if(b.dataset.sf){SC.sf=b.dataset.sf;lsSet("dz-sfilter",SC.sf);renderScreen();return}
   if(b.id==="openPvWin"){const w=window.open(location.href.split("#")[0]+"#leinwand","lok-leinwand","popup,width=1280,height=720");if(!w)toast("Das Fenster wurde blockiert. Erlaube Pop-ups für diese App.");return}
   if(b.id==="tShow"){setState("screen",Object.assign({},S.screen,{mode:"title",title:$("#tTitle").value,subtitle:$("#tSub").value}));return}
 });
@@ -1031,6 +1155,7 @@ $("#v-screen").addEventListener("change",e=>{const t=e.target;
   if(t.id==="oGrid")setState("screen",Object.assign({},S.screen,{showGrid:t.checked}));
   if(t.id==="oRoll"){$("#rollToScreen").checked=t.checked;lsSet("dz-r2s",t.checked)}
   if(t.dataset.mname){const mm=clone(S.media.get(t.dataset.mname));mm.name=t.value;put("media",t.dataset.mname,mm)}
+  if(t.dataset.msess){const mm=clone(S.media.get(t.dataset.msess));mm.session=t.value||null;put("media",t.dataset.msess,mm);t.blur();renderScreen()}
   if(t.dataset.msub){const mm=clone(S.media.get(t.dataset.msub));mm.sub=t.value;put("media",t.dataset.msub,mm)}
 });
 $("#v-screen").addEventListener("dragover",e=>{const d=e.target.closest("#drop");if(d){e.preventDefault();d.classList.add("over")}});
@@ -1043,7 +1168,7 @@ async function handleFiles(files){
     const url=URL.createObjectURL(f);let img;try{img=await loadImg(url)}catch{toast(`„${f.name}“ ist kein lesbares Bild.`);continue}
     const w=img.naturalWidth,h=img.naturalHeight,isMap=/map|karte|battle|grid|raster|dungeon/i.test(f.name);
     const cell=Math.max(12,Math.round(Math.max(w,h)/30)),cols=Math.ceil(w/cell),rows=Math.ceil(h/cell);
-    const doc={name:f.name.replace(/\.[^.]+$/,""),kind:isMap?"map":"image",w,h,cell,cols,rows,fog:"0".repeat(cols*rows),tokens:[],created:Date.now()};
+    const doc={session:(SC.sf!=="all"&&SC.sf!=="none"&&S.sessions.has(SC.sf))?SC.sf:null,name:f.name.replace(/\.[^.]+$/,""),kind:isMap?"map":"image",w,h,cell,cols,rows,fog:"0".repeat(cols*rows),tokens:[],created:Date.now()};
     $("#drop b").textContent="Lade hoch …";
     try{
       if(S.assets&&f.size<=20*1024*1024){const r=await S.assets.upload(f);doc.assetId=r.id}
@@ -1055,13 +1180,25 @@ async function handleFiles(files){
   }
   renderScreen();
 }
-S.subs.push(w=>{if((w==="media"||w==="screen"||w==="notes"||w==="chars")&&TAB==="screen"){
+S.subs.push(w=>{if((w==="media"||w==="screen"||w==="notes"||w==="chars"||w==="sessions")&&TAB==="screen"){
   // Kartenänderungen ohne Neuaufbau, wenn möglich
   if(w==="media"&&SC.sel&&$("#mapbox")){const m=S.media.get(SC.sel);if(m&&m.kind==="map"&&$("#ovl")&&String(m.cell)===$("#cellR").value&&$("#mapimg").getAttribute("src")===mediaSrc(m)){SC.fog=fogArr(m);drawFog($("#fogc"),m,SC.fog,"#000");drawTokens($("#toks"),m,true);
       const tb=$$(".mapedit .toolbar").pop();if(tb){const x=$("#tokDel");if(!SC.tokSel&&x){x.previousElementSibling?.remove();x.previousElementSibling?.remove();x.remove()}}return}}
   if(w==="screen"&&$("#v-screen .screen-wrap")){refreshNow();$$("#v-screen .thumb .onair").forEach(x=>x.remove());const s=S.screen;if((s.mode==="map"||s.mode==="image")&&s.mediaId){const t=$(`#v-screen [data-msel="${s.mediaId}"]`);t&&t.insertAdjacentHTML("beforeend",'<span class="badge onair">Live</span>')}
     const oi=$("#oInit");if(oi)oi.checked=!!s.showInit;const og=$("#oGrid");if(og)og.checked=!!s.showGrid;return}
   renderScreen()}});
+
+function mediaCard(id,x,s){return `<div class="media" aria-current="${id===SC.sel}"><div class="thumb" data-msel="${id}" style="background-image:url('${esc(mediaSrc(x))}')"><span class="badge">${x.kind==="map"?"Karte":"Bild"}</span>${(s.mode==="map"||s.mode==="image")&&s.mediaId===id?'<span class="badge onair">Live</span>':""}</div>
+       <div class="meta"><input value="${esc(x.name)}" data-mname="${id}" aria-label="Name"><input value="${esc(x.sub||"")}" data-msub="${id}" placeholder="Untertitel (optional)" aria-label="Untertitel"><select data-msess="${id}" aria-label="Session" style="font-size:.82rem;padding:2px 4px"><option value="">Ohne Session</option>${sessSorted().map(([sid,ss])=>`<option value="${sid}" ${x.session===sid?"selected":""}>${esc(ss.title||"Ohne Titel")}</option>`).join("")}</select><div class="row" style="gap:4px"><button class="btn primary sm" data-mshow="${id}">Zeigen</button><button class="btn sm" data-mkind="${id}" title="Als Karte mit Raster & Nebel oder als einfaches Bild">${x.kind==="map"?"→ Bild":"→ Karte"}</button><button class="btn ghost sm danger" data-mdel="${id}" aria-label="Löschen">×</button></div></div></div>`}
+function libEmpty(t){return`<div class="faint" style="grid-column:1/-1;font-size:.9rem">${t}</div>`}
+function mediaSessOk(x){return!!(x.session&&S.sessions.has(x.session))}
+function libHtml(media,s){const card=([id,x])=>mediaCard(id,x,s);
+  if(SC.sf!=="all"&&SC.sf!=="none"&&!S.sessions.has(SC.sf))SC.sf="all";
+  if(SC.sf==="none")return media.filter(([,x])=>!mediaSessOk(x)).map(card).join("")||libEmpty("Alle Bilder sind einer Session zugeordnet.");
+  if(SC.sf!=="all")return media.filter(([,x])=>x.session===SC.sf).map(card).join("")||libEmpty("Diese Session hat noch keine Bilder. Neue Uploads landen direkt hier, oder ordne Bilder über die Auswahl unter jedem Bild zu.");
+  if(!media.length)return libEmpty("Noch keine Bilder. Lade Szenenbilder oder eine Battlemap hoch.");
+  let h="";for(const[sid,ss]of sessSorted()){const g=media.filter(([,x])=>x.session===sid);if(g.length)h+=`<div class="libgrp">${esc(ss.title||"Ohne Titel")}<span>${g.length} ${g.length===1?"Bild":"Bilder"}</span></div>`+g.map(card).join("")}
+  const rest=media.filter(([,x])=>!mediaSessOk(x));if(rest.length)h+=(h?`<div class="libgrp">Ohne Session<span>${rest.length} ${rest.length===1?"Bild":"Bilder"}</span></div>`:"")+rest.map(card).join("");return h}
 
 /* ======================= Spieler-Leinwand ======================= */
 const PV={on:false,fromDm:false,imgSrc:null,ro:null,hideT:null};
@@ -1226,9 +1363,9 @@ document.addEventListener("keydown",e=>{if(TAB==="lib"&&LB.cur&&!isEditing(docum
 function blobToDataURL(b){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(b)})}
 async function dataURLToBlob(d){return await (await fetch(d)).blob()}
 async function exportData(){
-  flushChar();flushNote();const btn=$("#exportBtn");btn.disabled=true;btn.textContent="Wird vorbereitet …";
+  flushChar();flushNote();flushSess();const btn=$("#exportBtn");btn.disabled=true;btn.textContent="Wird vorbereitet …";
   try{
-    const out={app:"logbuch-der-lok",format:1,exported:new Date().toISOString(),chars:Object.fromEntries(S.chars),notes:Object.fromEntries(S.notes),media:{},combat:S.combat,screen:S.screen,blobs:{}};
+    const out={app:"logbuch-der-lok",format:1,exported:new Date().toISOString(),chars:Object.fromEntries(S.chars),notes:Object.fromEntries(S.notes),sessions:Object.fromEntries(S.sessions),media:{},combat:S.combat,screen:S.screen,blobs:{}};
     for(const[id,m]of S.media){const mm=clone(m);let blob=null;
       try{if(m.assetId)blob=await (await fetch("/_blob/"+m.assetId)).blob();else if(m.blobId&&LDB.db)blob=await ldbGet("blobs",m.blobId)}catch{}
       if(blob){const key=m.assetId||m.blobId;out.blobs[key]=await blobToDataURL(blob);mm.blobId=key;delete mm.assetId}
@@ -1245,11 +1382,12 @@ async function importData(file){
   if(!o||o.app!=="logbuch-der-lok"){toast("Diese Datei ist keine Sicherung des Logbuchs der Lok.");return}
   if(!LDB.db){toast("Ohne dauerhaften Speicher kann keine Sicherung eingespielt werden.");return}
   for(const[k,d]of Object.entries(o.blobs||{})){try{await ldbWrite("blobs",k,await dataURLToBlob(d))}catch{}}
-  for(const col of ["chars","notes","media"])for(const[k,v]of Object.entries(o[col]||{}))await ldbWrite(col,k,v);
+  for(const col of ["chars","notes","media","sessions"])for(const[k,v]of Object.entries(o[col]||{}))await ldbWrite(col,k,v);
+  for(const[k,pt]of Object.entries(o.mediaPatch||{})){const cur=await ldbGet("media",k);if(cur)await ldbWrite("media",k,Object.assign(cur,pt))}
   if(o.combat)await ldbWrite("state","combat",o.combat);if(o.screen)await ldbWrite("state","screen",o.screen);
-  CH.work=null;NT.work=null;await localReload("*");try{bc&&bc.postMessage({path:"*"})}catch{}
-  const n=Object.keys(o.chars||{}).length,m=Object.keys(o.notes||{}).length,k=Object.keys(o.media||{}).length;
-  $("#dataInfo").textContent=`Eingespielt: ${n} Charaktere, ${m} Notizen, ${k} Bilder und Karten.`;renderTab(TAB);
+  CH.work=null;SE.work=null;NT.work=null;await localReload("*");try{bc&&bc.postMessage({path:"*"})}catch{}
+  const n=Object.keys(o.chars||{}).length,m=Object.keys(o.notes||{}).length,k=Object.keys(o.media||{}).length,ss=Object.keys(o.sessions||{}).length,mp=Object.keys(o.mediaPatch||{}).length;
+  $("#dataInfo").textContent=`Eingespielt: ${[n?n+" Charaktere":"",m?m+" Notizen":"",ss?ss+" Sessions":"",k?k+" Bilder und Karten":"",mp?mp+" Bilder einsortiert":""].filter(Boolean).join(", ")||"nichts Neues"}.`;renderTab(TAB);
 }
 $("#dataBtn").onclick=()=>{const p=$("#datapop");p.hidden=!p.hidden;$("#dataBtn").setAttribute("aria-expanded",String(!p.hidden));
   $("#dataInfo").textContent=S.mode==="db"?"Lade eine Sicherung herunter, um deine Charaktere, Notizen, Kämpfe und Bilder in die installierte App auf deinem Rechner zu übernehmen.":"Deine Daten liegen auf diesem Rechner. Lade ab und zu eine Sicherung herunter, damit nichts verloren geht, wenn der Browser-Speicher geleert wird.";
@@ -1269,13 +1407,13 @@ $("#clearLog").onclick=()=>{Dice.log=[];lsSet("dz-log",[]);renderLog()};
 $("#rollToScreen").checked=!!lsGet("dz-r2s");
 $("#rollToScreen").onchange=e=>{lsSet("dz-r2s",e.target.checked);const o=$("#oRoll");if(o)o.checked=e.target.checked};
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(PV.on&&PV.fromDm)closePlayer();else if(drawer.classList.contains("open"))$("#diceClose").click()}});
-window.addEventListener("beforeunload",()=>{flushChar();flushNote()});
+window.addEventListener("beforeunload",()=>{flushChar();flushNote();flushSess()});
 
 /* ======================= Start ======================= */
 renderLog();
 const asPlayer=location.hash.replace("#","").toLowerCase()==="leinwand";
 if(asPlayer){openPlayer(false);$("#topbar").hidden=true}
-showTab(["chars","init","notes","screen","lib"].includes(TAB)?TAB:"chars");
+showTab(["chars","init","sess","notes","screen","lib"].includes(TAB)?TAB:"chars");
 if(!asPlayer)setTimeout(libInit,1500);
 boot();
 </script>
