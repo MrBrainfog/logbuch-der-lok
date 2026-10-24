@@ -1041,7 +1041,7 @@ async function shrink(img,maxBytes){let maxD=1800,q=.82;for(let k=0;k<8;k++){con
 async function handleFiles(files){
   for(const f of files){if(!f.type.startsWith("image/"))continue;
     const url=URL.createObjectURL(f);let img;try{img=await loadImg(url)}catch{toast(`„${f.name}“ ist kein lesbares Bild.`);continue}
-    const w=img.naturalWidth,h=img.naturalHeight,isMap=true;
+    const w=img.naturalWidth,h=img.naturalHeight,isMap=/map|karte|battle|grid|raster|dungeon/i.test(f.name);
     const cell=Math.max(12,Math.round(Math.max(w,h)/30)),cols=Math.ceil(w/cell),rows=Math.ceil(h/cell);
     const doc={name:f.name.replace(/\.[^.]+$/,""),kind:isMap?"map":"image",w,h,cell,cols,rows,fog:"0".repeat(cols*rows),tokens:[],created:Date.now()};
     $("#drop b").textContent="Lade hoch …";
