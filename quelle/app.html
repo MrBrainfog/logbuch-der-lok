@@ -340,7 +340,8 @@ mark{background:var(--brass-soft);color:var(--fg);box-shadow:inset 0 -2px 0 var(
 .pv-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(40,70,66,.45),transparent 62%),radial-gradient(ellipse at 50% 120%,rgba(108,200,220,.12),transparent 50%);pointer-events:none}
 #player .pv-stage{background-image:var(--grain)}
 .pv-img{max-width:100%;max-height:100%;object-fit:contain;display:block}
-.pv-caption{position:absolute;bottom:3vh;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);padding:.4em 1.1em;border-radius:6px;font-family:var(--f-display);font-size:clamp(18px,2vw,34px);color:#e0a85a;white-space:nowrap}
+.pv-caption{position:absolute;bottom:4vh;left:50%;transform:translateX(-50%);background:rgba(8,6,6,.72);padding:.35em 1.2em .45em;border-radius:6px;border:1px solid rgba(224,168,90,.35);font-family:var(--f-display);font-size:clamp(20px,2.3vw,40px);color:#e0a85a;text-align:center;max-width:86vw;line-height:1.15}
+.pv-caption small{display:block;font-family:var(--f-italic);font-style:italic;font-size:.6em;color:#d9cdb2;margin-top:.15em;text-wrap:balance}
 .pv-handout{max-width:min(1100px,88vw);max-height:86vh;overflow:auto;background:#1b1a14;border:1px solid #5a4a30;outline:1px solid #2c271c;outline-offset:6px;border-radius:10px;padding:4vh 4vw;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 .pv-handout h2{font-family:var(--f-display);font-size:clamp(28px,3.4vw,60px);margin:0 0 .5em;color:#e0a85a;font-weight:400}
 .pv-handout div{font-family:var(--f-italic)!important}
@@ -919,7 +920,7 @@ function renderScreen(){
      <div class="row"><h2 class="sec" style="flex:1">Karten & Bilder</h2><span class="faint" style="font-size:.82rem">${S.mode==="db"?(S.assets?"Bilder werden mit der App gespeichert":"Bilder werden verkleinert gespeichert"):LDB.db?"Bilder werden auf diesem Rechner gespeichert":"Bilder werden verkleinert im Browser gespeichert"}</span></div>
      <label class="dropzone" id="drop"><input type="file" accept="image/*" multiple id="upl" hidden><b>Bilder hochladen</b><span style="font-size:.88rem">Battlemaps, Szenenbilder, Porträts – hierher ziehen oder klicken</span></label>
      <div class="lib">${media.map(([id,x])=>`<div class="media" aria-current="${id===SC.sel}"><div class="thumb" data-msel="${id}" style="background-image:url('${esc(mediaSrc(x))}')"><span class="badge">${x.kind==="map"?"Karte":"Bild"}</span>${(s.mode==="map"||s.mode==="image")&&s.mediaId===id?'<span class="badge onair">Live</span>':""}</div>
-       <div class="meta"><input value="${esc(x.name)}" data-mname="${id}" aria-label="Name"><div class="row" style="gap:4px"><button class="btn primary sm" data-mshow="${id}">Zeigen</button><button class="btn sm" data-mkind="${id}" title="Als Karte mit Raster & Nebel oder als einfaches Bild">${x.kind==="map"?"→ Bild":"→ Karte"}</button><button class="btn ghost sm danger" data-mdel="${id}" aria-label="Löschen">×</button></div></div></div>`).join("")||`<div class="faint" style="grid-column:1/-1;font-size:.9rem">Noch keine Bilder. Lade eine Battlemap hoch, um Nebel des Krieges und Spielfiguren zu nutzen.</div>`}</div>
+       <div class="meta"><input value="${esc(x.name)}" data-mname="${id}" aria-label="Name"><input value="${esc(x.sub||"")}" data-msub="${id}" placeholder="Untertitel (optional)" aria-label="Untertitel"><div class="row" style="gap:4px"><button class="btn primary sm" data-mshow="${id}">Zeigen</button><button class="btn sm" data-mkind="${id}" title="Als Karte mit Raster & Nebel oder als einfaches Bild">${x.kind==="map"?"→ Bild":"→ Karte"}</button><button class="btn ghost sm danger" data-mdel="${id}" aria-label="Löschen">×</button></div></div></div>`).join("")||`<div class="faint" style="grid-column:1/-1;font-size:.9rem">Noch keine Bilder. Lade eine Battlemap hoch, um Nebel des Krieges und Spielfiguren zu nutzen.</div>`}</div>
    </div></div>
    <div class="side">
      <div class="panel"><h2 class="sec">Großer Bildschirm</h2>
@@ -1030,6 +1031,7 @@ $("#v-screen").addEventListener("change",e=>{const t=e.target;
   if(t.id==="oGrid")setState("screen",Object.assign({},S.screen,{showGrid:t.checked}));
   if(t.id==="oRoll"){$("#rollToScreen").checked=t.checked;lsSet("dz-r2s",t.checked)}
   if(t.dataset.mname){const mm=clone(S.media.get(t.dataset.mname));mm.name=t.value;put("media",t.dataset.mname,mm)}
+  if(t.dataset.msub){const mm=clone(S.media.get(t.dataset.msub));mm.sub=t.value;put("media",t.dataset.msub,mm)}
 });
 $("#v-screen").addEventListener("dragover",e=>{const d=e.target.closest("#drop");if(d){e.preventDefault();d.classList.add("over")}});
 $("#v-screen").addEventListener("dragleave",e=>{const d=e.target.closest("#drop");if(d)d.classList.remove("over")});
@@ -1075,12 +1077,12 @@ let lastRollT=0;
 function renderPlayer(force){
   if(!PV.on)return;const s=S.screen,st=$("#pvStage");
   const nt=S.notes.get(s.noteId),mi=S.media.get(s.mediaId);
-  const key=[s.mode,s.mediaId,s.noteId,s.title,s.subtitle,mi?mediaSrc(mi).length+mi.kind:"-",s.mode==="handout"&&nt?nt.updated:""].join("|");
+  const key=[s.mode,s.mediaId,s.noteId,s.title,s.subtitle,mi?mediaSrc(mi).length+mi.kind+mi.name+(mi.sub||""):"-",s.mode==="handout"&&nt?nt.updated:""].join("|");
   if(force||st.dataset.key!==key){st.dataset.key=key;PV.imgSrc=null;
     if(s.mode==="blank")st.innerHTML="";
     else if(s.mode==="title")st.innerHTML=`<div class="pv-vignette"></div><div class="pv-title"><span class="pv-kicker">Die Lok · Nächster Halt</span><h1>${esc(s.title)}</h1><div class="pv-rail" aria-hidden="true"><i style="left:12%"></i><i style="left:34%"></i><i class="cur" style="left:56%"></i><i style="left:78%;opacity:.45"></i></div>${s.subtitle?`<p>${esc(s.subtitle)}</p>`:""}</div>`;
     else if(s.mode==="handout"){const n=S.notes.get(s.noteId);st.innerHTML=n?`<div class="pv-handout"><h2>${esc(n.title||"Handout")}</h2><div>${esc(n.body)}</div></div>`:""}
-    else if(s.mode==="image"){const m=S.media.get(s.mediaId);st.innerHTML=m?`<img class="pv-img" src="${esc(mediaSrc(m))}" alt=""><div class="pv-caption">${esc(m.name)}</div>`:""}
+    else if(s.mode==="image"){const m=S.media.get(s.mediaId);st.innerHTML=m?`<img class="pv-img" src="${esc(mediaSrc(m))}" alt="">${m.name&&!m.noCap?`<div class="pv-caption">${esc(m.name)}${m.sub?`<small>${esc(m.sub)}</small>`:""}</div>`:""}`:""}
     else if(s.mode==="map"){const m=S.media.get(s.mediaId);if(m){st.innerHTML=`<div class="mapbox" id="pvBox"><img src="${esc(mediaSrc(m))}" alt=""><div class="ovl" id="pvOvl"><canvas id="pvFog" class="fog-pv"></canvas><div class="grid" id="pvGrid"></div><div id="pvToks"></div></div></div>`;
       if(PV.ro)PV.ro.disconnect();PV.ro=new ResizeObserver(()=>layoutPv());PV.ro.observe(st)}else st.innerHTML=""}
   }

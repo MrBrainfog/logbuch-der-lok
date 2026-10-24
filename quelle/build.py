@@ -20,5 +20,5 @@ if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.s
 '''
 open('index.html','w').write(head+src+tail)
 open('sw.js','w').write(open('quelle/sw.template.js').read().replace('__VER__',ver))
-for f in ['pdf.js','pdf.worker.js']: shutil.copy('dl/pdfjs/build/'+f,''+f)
+# pdf.js und pdf.worker.js liegen bereits im Hauptordner (pdf.js 3.11.174 von Mozilla)
 print(ver)
