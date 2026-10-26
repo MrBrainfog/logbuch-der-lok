@@ -5,7 +5,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.LOK_OFFLINE=true;window.LOK_VERSION="2026.10.24-1249";</script>
+<script>window.LOK_OFFLINE=true;window.LOK_VERSION="2026.10.26-1733";</script>
 </head><body>
 <title>Logbuch der Lok</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -320,6 +320,18 @@ h2.sec{font-family:var(--f-display);font-weight:400;font-size:1.28rem;margin:0;l
 .libgrp span{font-family:var(--f-body);font-size:.8rem;color:var(--fg-faint)}
 .editor-md{min-height:62vh;font-family:var(--f-mono);font-size:.88rem;line-height:1.55}
 
+.livebar{position:fixed;left:0;right:0;bottom:0;z-index:35;background:var(--surface) var(--grain);border-top:3px double var(--line-strong);box-shadow:0 -8px 24px rgba(0,0,0,.25);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px}
+.lb-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lb-live{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--arcane)}
+.lb-live i{width:8px;height:8px;border-radius:50%;background:var(--arcane);box-shadow:0 0 8px var(--arcane)}
+.lb-what{font-family:var(--f-display);font-size:1.05rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46ch}
+.lb-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.lb-strip .sthumb{flex:0 0 132px}
+.lb-strip .sthumb.live::after{content:"Live · nochmal klicken zum Ausblenden";position:absolute;left:0;right:0;top:0;font-size:.62rem;font-weight:700;letter-spacing:.04em;background:var(--arcane);color:#061416;padding:1px 5px;border-radius:5px 5px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-empty{font-size:.85rem;color:var(--fg-dim);padding:4px 0}
+@media (max-width:600px){.lb-what{max-width:20ch}}
+
 /* ---------- Bibliothek ---------- */
 .lib-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:start}
 @media (max-width:1000px){.lib-wrap{grid-template-columns:minmax(0,1fr)}}
@@ -479,6 +491,18 @@ mark{background:var(--brass-soft);color:var(--fg);box-shadow:inset 0 -2px 0 var(
     <div class="log" id="log"><div class="faint" style="font-size:.88rem">Noch keine Würfe. Klick im Charakterbogen auf einen Wert, um ihn zu würfeln.</div></div>
   </div>
 </aside>
+
+<div class="livebar" id="livebar" hidden>
+  <div class="lb-head">
+    <span class="lb-live"><i></i>Leinwand</span><span class="lb-what" id="lbWhat"></span>
+    <span class="spacer"></span>
+    <button class="btn sm" data-lb="blank">Abdunkeln</button>
+    <button class="btn sm" data-lb="title">Bahnhofstafel</button>
+    <button class="btn sm" data-lb="init" aria-pressed="false">Initiative</button>
+    <button class="btn ghost sm" data-lb="fold" aria-expanded="true" id="lbFold">Bilder ausblenden</button>
+  </div>
+  <div class="lb-strip" id="lbStrip"></div>
+</div>
 
 <div id="player" hidden>
   <div class="pv-stage" id="pvStage"></div>
@@ -648,8 +672,12 @@ async function boot(){
 
 /* ======================= Navigation ======================= */
 let TAB=lsGet("dz-tab")||"chars";
-function showTab(t){TAB=t;lsSet("dz-tab",t);$$(".tab").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));
-  $$(".view").forEach(v=>v.hidden=v.id!=="v-"+t);renderTab(t)}
+const SCROLL=lsGet("dz-scroll")||{};
+function scrollKey(t){return t==="sess"?"sess:"+(SE.sel||""):t}
+function saveScroll(){SCROLL[scrollKey(TAB)]=Math.round(window.scrollY);lsSet("dz-scroll",SCROLL)}
+function restoreScroll(t){const y=SCROLL[scrollKey(t)]||0;requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo(0,y)))}
+function showTab(t){if(t!==TAB)saveScroll();TAB=t;lsSet("dz-tab",t);$$(".tab").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));
+  $$(".view").forEach(v=>v.hidden=v.id!=="v-"+t);renderTab(t);updateLivebar();restoreScroll(t)}
 function renderTab(t){if(t==="lib"){libInit().then(()=>renderLib());return}({chars:renderChars,init:renderInit,sess:renderSess,notes:renderNotes,screen:renderScreen})[t]()}
 $$(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 
@@ -949,7 +977,7 @@ function renderSess(){
 }
 function renderSessList(){const l=$("#slist");if(!l)return;
   l.innerHTML=sessSorted().map(([id,x])=>{const open=(x.comments||[]).filter(c=>!c.done).length,n=sessMedia(id).length;return`<button class="nitem" data-id="${id}" aria-current="${id===SE.sel}"><span class="cat">${esc(fmtDate(x.date))}</span><span class="n">${esc(x.title||"Ohne Titel")}</span><span class="p">${n} ${n===1?"Bild":"Bilder"}${open?` · ${open} offene Kommentare`:""}</span></button>`}).join("")||`<div class="faint" style="padding:10px">Noch keine Sessions.</div>`;
-  l.onclick=e=>{const b=e.target.closest(".nitem");if(!b)return;flushSess();SE.sel=b.dataset.id;lsSet("dz-ssel",SE.sel);SE.work=null;SE.edit=false;SE.open=null;renderSess()}}
+  l.onclick=e=>{const b=e.target.closest(".nitem");if(!b)return;flushSess();saveScroll();SE.sel=b.dataset.id;lsSet("dz-ssel",SE.sel);SE.work=null;SE.edit=false;SE.open=null;renderSess();updateLivebar();restoreScroll("sess")}}
 function commentHtml(c){return`<div class="cm ${c.done?"done":""}"><div class="who"><b>${esc(c.by||"Jemand")}</b><span>${new Date(c.t).toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"})}</span><span class="spacer"></span><button class="btn ghost sm" data-cdone="${c.id}">${c.done?"Wieder öffnen":"Erledigt"}</button><button class="btn ghost sm danger" data-cdel="${c.id}" aria-label="Kommentar löschen">×</button></div><div class="txt">${esc(c.text)}</div></div>`}
 function threadHtml(sec,list){return`<div class="cthread">${list.map(commentHtml).join("")||`<div class="faint" style="font-size:.85rem">Noch keine Kommentare${sec?" zu diesem Abschnitt":""}.</div>`}<div class="cform">${SE.me?"":`<input class="cname" placeholder="Dein Name" aria-label="Dein Name">`}<textarea class="ctext" placeholder="Kommentar schreiben …" aria-label="Kommentar"></textarea><div class="row"><span class="faint" style="font-size:.78rem">${SE.me?`als ${esc(SE.me)} · <button class="linkbtn" data-cme>ändern</button>`:""}</span><span class="spacer"></span><button class="btn primary sm" data-cadd="${esc(sec)}">Kommentieren</button></div></div></div>`}
 function renderSessRead(){
@@ -958,7 +986,6 @@ function renderSessRead(){
   box.innerHTML=`<div class="sview">
    <div class="row"><span class="cat">${esc(fmtDate(x.date))}</span><span class="spacer"></span><button class="btn sm" data-sact="imgs">Bilder in der Leinwand (${med.length})</button><button class="btn primary sm" data-sact="edit">Bearbeiten</button><button class="btn danger sm" data-sact="del">Löschen</button></div>
    <h1>${esc(x.title||"Ohne Titel")}</h1>
-   ${med.length?`<div class="block"><span class="label">Bildkarten · Klick zeigt das Bild auf der Leinwand</span><div class="sstrip">${med.map(([id,m])=>`<button class="sthumb ${liveId===id?"live":""}" data-sshow="${id}" style="background-image:url('${esc(mediaSrc(m))}')" title="${esc(m.name)}"><span>${esc(m.name)}</span></button>`).join("")}</div></div>`:""}
    <div class="md">${secs.map(q=>{if(!q.sec)return q.html;const list=cs.filter(c=>c.sec===q.sec),open=list.filter(c=>!c.done).length;return`<section class="msec"><div class="msec-h"><h2>${mdInline(q.title)}</h2><button class="cbtn ${open?"has":""}" data-csec="${q.sec}" aria-expanded="${SE.open===q.sec}">${list.length?`Kommentare (${list.length}${open&&open<list.length?`, ${open} offen`:""})`:"Kommentieren"}</button></div>${SE.open===q.sec?threadHtml(q.sec,list):""}${q.html}</section>`}).join("")}
    <section class="msec"><div class="msec-h"><h2>Allgemeine Kommentare</h2></div>${threadHtml("",general)}</section></div></div>`;
 }
@@ -973,18 +1000,38 @@ $("#v-sess").addEventListener("click",e=>{const b=e.target.closest("button");if(
   const commit=()=>{SE.dirty=1;flushSess();renderSessRead();renderSessList()};
   if(b.dataset.sact==="edit"){SE.edit=true;renderSessEdit();return}
   if(b.dataset.sact==="done"){flushSess();SE.edit=false;SE.work=null;renderSess();return}
-  if(b.dataset.sact==="imgs"){SC.sf=SE.sel;lsSet("dz-sfilter",SC.sf);showTab("screen");return}
+  if(b.dataset.sact==="imgs"){saveScroll();SC.sf=SE.sel;lsSet("dz-sfilter",SC.sf);showTab("screen");return}
   if(b.dataset.sact==="del"){if(!b.classList.contains("armed")){b.classList.add("armed");b.textContent="Wirklich löschen?";setTimeout(()=>{b.classList.remove("armed");b.textContent="Löschen"},3000);return}
     SE.dirty=0;del("sessions",SE.sel);SE.sel=null;SE.work=null;renderSess();return}
-  if(b.dataset.sshow){const m=S.media.get(b.dataset.sshow);if(m)setState("screen",Object.assign({},S.screen,{mode:m.kind==="map"?"map":"image",mediaId:b.dataset.sshow}));$$("#sbox .sthumb").forEach(t=>t.classList.toggle("live",t===b));return}
-  if(b.dataset.csec!=null){SE.open=SE.open===b.dataset.csec?null:b.dataset.csec;renderSessRead();return}
+    if(b.dataset.csec!=null){SE.open=SE.open===b.dataset.csec?null:b.dataset.csec;renderSessRead();return}
   if(b.hasAttribute("data-cme")){SE.me="";lsSet("dz-me","");renderSessRead();return}
   if(b.dataset.cadd!=null){const f=b.closest(".cform"),t=f.querySelector(".ctext").value.trim();if(!t){f.querySelector(".ctext").focus();return}const nm=f.querySelector(".cname");if(nm&&nm.value.trim()){SE.me=nm.value.trim();lsSet("dz-me",SE.me)}
     x.comments=[...(x.comments||[]),{id:uid(),sec:b.dataset.cadd,text:t,by:SE.me||"Spielleitung",t:Date.now(),done:false}];if(b.dataset.cadd)SE.open=b.dataset.cadd;commit();return}
   if(b.dataset.cdone){const c=(x.comments||[]).find(c=>c.id===b.dataset.cdone);if(c){c.done=!c.done;commit()}return}
   if(b.dataset.cdel){if(!b.classList.contains("armed")){b.classList.add("armed");b.textContent="Löschen?";setTimeout(()=>{b.classList.remove("armed");b.textContent="×"},3000);return}x.comments=(x.comments||[]).filter(c=>c.id!==b.dataset.cdel);commit();return}
 });
-S.subs.push(w=>{if((w==="sessions"||w==="media"||w==="screen")&&TAB==="sess"&&!SE.edit)renderSess();else if(w==="sessions"&&TAB==="sess")renderSessList()});
+S.subs.push(w=>{if(w==="screen"||w==="media"||w==="sessions"||w==="combat")updateLivebar();if((w==="sessions"||w==="media")&&TAB==="sess"&&!SE.edit)renderSess();else if(w==="sessions"&&TAB==="sess")renderSessList()});
+
+/* ---------- Leinwand-Leiste in Sessions ---------- */
+const LB2={fold:!!lsGet("dz-lbfold")};
+function updateLivebar(){const bar=$("#livebar");if(!bar)return;const show=TAB==="sess"&&!!SE.sel&&S.sessions.has(SE.sel);bar.hidden=!show;
+  const mainEl=document.querySelector("main");if(!show){mainEl.style.paddingBottom="";return}
+  $("#lbWhat").textContent=screenLabel();
+  const ib=bar.querySelector('[data-lb="init"]');ib.setAttribute("aria-pressed",String(!!S.screen.showInit));
+  $("#lbFold").setAttribute("aria-expanded",String(!LB2.fold));$("#lbFold").textContent=LB2.fold?"Bilder zeigen":"Bilder ausblenden";
+  const strip=$("#lbStrip");strip.hidden=LB2.fold;
+  if(!LB2.fold){const med=sessMedia(SE.sel),liveId=(S.screen.mode==="image"||S.screen.mode==="map")?S.screen.mediaId:null;
+    strip.innerHTML=med.length?med.map(([id,m])=>`<button class="sthumb ${liveId===id?"live":""}" data-lbshow="${id}" style="background-image:url('${esc(mediaSrc(m))}')" title="${esc(m.name)}" aria-pressed="${liveId===id}"><span>${esc(m.name)}</span></button>`).join("")
+      :`<div class="lb-empty">Diese Session hat noch keine Bilder. Ordne sie in der Leinwand über die Auswahl unter jedem Bild zu.</div>`}
+  requestAnimationFrame(()=>{mainEl.style.paddingBottom=(bar.offsetHeight+24)+"px"})}
+$("#livebar").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.lbshow){const id=b.dataset.lbshow,m=S.media.get(id),live=(S.screen.mode==="image"||S.screen.mode==="map")&&S.screen.mediaId===id;
+    if(live)setState("screen",Object.assign({},S.screen,{mode:"blank"}));else if(m)setState("screen",Object.assign({},S.screen,{mode:m.kind==="map"?"map":"image",mediaId:id}));return}
+  const a=b.dataset.lb;
+  if(a==="blank")setState("screen",Object.assign({},S.screen,{mode:"blank"}));
+  if(a==="title")setState("screen",Object.assign({},S.screen,{mode:"title"}));
+  if(a==="init")setState("screen",Object.assign({},S.screen,{showInit:!S.screen.showInit}));
+  if(a==="fold"){LB2.fold=!LB2.fold;lsSet("dz-lbfold",LB2.fold);updateLivebar()}});
 
 /* ======================= Notizen ======================= */
 const NCATS=["Sitzung","NSC","Ort","Quest","Gegenstand","Lore","Sonstiges"];
