@@ -1,5 +1,5 @@
 // Logbuch der Lok – Offline-Speicher für die App-Dateien
-const VER="lok-2026.10.26-1735";
+const VER="lok-2026.10.26-1746";
 const CORE=["./","index.html","manifest.webmanifest","icon.svg","icon-192.png","icon-512.png","pdf.js","pdf.worker.js"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(VER).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith("lok-")&&k!==VER&&k!=="lok-fonts").map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

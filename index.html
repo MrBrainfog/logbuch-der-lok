@@ -5,7 +5,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.LOK_OFFLINE=true;window.LOK_VERSION="2026.10.26-1735";</script>
+<script>window.LOK_OFFLINE=true;window.LOK_VERSION="2026.10.26-1746";</script>
 </head><body>
 <title>Logbuch der Lok</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -218,6 +218,30 @@ h2.sec{font-family:var(--f-display);font-weight:400;font-size:1.28rem;margin:0;l
 .mrow:nth-child(odd){background:var(--surface-2)}
 .mrow .st{font-size:.75rem;color:var(--fg-faint)}
 .attrib{font-size:.72rem;color:var(--fg-faint)}
+
+.stat{grid-column:1/-1;margin-top:8px;padding:12px 14px;border-top:2px solid var(--blood);background:var(--surface-2);border-radius:0 0 8px 8px;display:flex;flex-direction:column;gap:5px;font-size:.92rem;min-width:0}
+.st-name{font-family:var(--f-display);font-size:1.3rem;color:var(--blood);line-height:1.1}
+.st-sub{font-style:italic;color:var(--fg-dim);font-size:.88rem}
+.st-rule{height:2px;background:linear-gradient(90deg,var(--blood),transparent);opacity:.55;margin:3px 0}
+.st-p b{font-weight:700}
+.st-ab{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;text-align:center}
+.st-ab button{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 0;cursor:pointer;font-variant-numeric:tabular-nums;font-size:.86rem}
+.st-ab button:hover{border-color:var(--brass)}
+.st-ab .k{display:block;font-size:.64rem;font-weight:700;letter-spacing:.08em;color:var(--fg-faint)}
+.stat h4{font-family:var(--f-display);font-weight:400;font-size:1.08rem;color:var(--blood);margin:8px 0 2px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.stat h4 .btn{margin-left:auto;font-family:var(--f-body)}
+.stat h4 .btn+.btn{margin-left:0}
+.st-act{margin:3px 0;line-height:1.5}
+.st-roll{display:inline-flex;gap:4px;margin-left:4px;vertical-align:middle;flex-wrap:wrap}
+.st-roll .btn{padding:1px 7px;font-size:.78rem}
+.ste-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.ste-ab{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.ste-ab input{text-align:center}
+.ste-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);align-items:start}
+.ste-item textarea{min-height:46px}
+.ste-atk{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.5fr) 64px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:6px}
+.ste-atk2{display:grid;grid-template-columns:minmax(0,1fr) 90px;gap:6px}
+@media (max-width:760px){.ste-atk{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.ste-ab,.st-ab{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
 /* ---------- Notizen ---------- */
 .notes-wrap{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;align-items:start}
@@ -543,13 +567,38 @@ const ABN=Object.fromEntries(ABILS.map(a=>[a[0],a[1]]));
 const SKILLS=[["akro","Akrobatik","dex"],["arka","Arkane Kunde","int"],["athl","Athletik","str"],["auft","Auftreten","cha"],["eins","Einschüchtern","cha"],["fing","Fingerfertigkeit","dex"],["gesc","Geschichte","int"],["heil","Heilkunde","wis"],["heim","Heimlichkeit","dex"],["tier","Mit Tieren umgehen","wis"],["moti","Motiv erkennen","wis"],["nach","Nachforschungen","int"],["natu","Naturkunde","int"],["reli","Religion","int"],["taeu","Täuschen","cha"],["uebe","Überlebenskunst","wis"],["ueberz","Überzeugen","cha"],["wahr","Wahrnehmung","wis"]];
 const CONDS=["Bezaubert","Betäubt","Bewusstlos","Blind","Erschöpft","Festgesetzt","Gelähmt","Gepackt","Kampfunfähig","Liegend","Taub","Unsichtbar","Verängstigt","Vergiftet","Versteinert","Konzentration"];
 const prof=lv=>2+Math.floor((Math.max(1,num(lv,1))-1)/4);
-// Monsterwerte aus dem SRD 5.1 (CC-BY-4.0)
+// Monsterwerte aus dem SRD 5.1 (CC-BY-4.0), Wizards of the Coast
+const PACK="Vorteil auf Angriffswürfe gegen eine Kreatur, wenn mindestens ein kampffähiger Verbündeter innerhalb von 1,5 m von ihr ist.";
+const KEEN="Vorteil auf Weisheitswürfe (Wahrnehmung), die auf Gehör oder Geruch beruhen.";
+const DEVSIGHT="Magische Dunkelheit behindert seine Dunkelsicht nicht.",MAGRES="Vorteil auf Rettungswürfe gegen Zauber und andere magische Effekte.";
+const NONMAG="Wucht, Stich und Hieb durch nichtmagische Angriffe, die nicht versilbert sind";
+const mA=(n,type,hit,reach,dmg,dtype,extra,t,recharge)=>({n,type,hit:hit||"",reach:reach||"",dmg:dmg||"",dtype:dtype||"",extra:extra||"",t:t||"",recharge:recharge||""});
+const mT=(n,t)=>({n,t});
+const MON=(name,size,type,align,ac,acNote,hpDice,speed,ab,o,traits,actions,more)=>Object.assign({name,size,type,align,ac,acNote,hpDice,speed,ab:{str:ab[0],dex:ab[1],con:ab[2],int:ab[3],wis:ab[4],cha:ab[5]},saves:"",skills:"",vuln:"",resist:"",immune:"",condImm:"",senses:"",languages:"",cr:"",traits,actions,bonus:[],reactions:[],legendary:[]},o,more||{});
 const MONSTERS=[
- ["Kobold",12,"2d6-2",2,"1/8"],["Riesenratte",12,"2d6",2,"1/8"],["Bandit",12,"2d8+2",1,"1/8"],
- ["Goblin",15,"2d6",2,"1/4"],["Skelett",13,"2d8+4",2,"1/4"],["Zombie",8,"3d8+9",-2,"1/4"],["Wolf",13,"2d8+2",2,"1/4"],
- ["Ork",13,"2d8+6",1,"1/2"],["Hobgoblin",18,"2d8+2",1,"1/2"],["Grottenschrat",16,"5d8+5",2,"1"],["Ghul",12,"5d8",2,"1"],
- ["Riesenspinne",14,"4d10+4",3,"1"],["Banditenhauptmann",15,"10d8+20",3,"2"],["Oger",11,"7d10+21",-1,"2"],
- ["Eulenbär",13,"7d10+21",1,"3"],["Troll",15,"8d10+40",1,"5"]
+ MON("Kobold","Klein","Humanoide (Kobold)","rechtschaffen böse",12,"","2d6-2","9 m",[7,15,9,8,7,8],{senses:"Dunkelsicht 18 m, passive Wahrnehmung 8",languages:"Gemeinsprache, Drakonisch",cr:"1/8"},[mT("Empfindlich gegenüber Sonnenlicht","Im Sonnenlicht Nachteil auf Angriffswürfe und auf Weisheitswürfe (Wahrnehmung), die auf Sicht beruhen."),mT("Rudeltaktik",PACK)],[mA("Dolch","nah","+4","1,5 m","1d4+2","Stich"),mA("Schleuder","fern","+4","9/36 m","1d4+2","Wucht")]),
+ MON("Riesenratte","Klein","Tier","gesinnungslos",12,"","2d6","9 m",[7,15,11,2,10,4],{senses:"Dunkelsicht 18 m, passive Wahrnehmung 10",cr:"1/8"},[mT("Scharfer Geruchssinn","Vorteil auf Weisheitswürfe (Wahrnehmung), die auf Geruch beruhen."),mT("Rudeltaktik",PACK)],[mA("Biss","nah","+4","1,5 m","1d4+2","Stich")]),
+ MON("Bandit","Mittelgroß","Humanoide (beliebiges Volk)","beliebig, nicht rechtschaffen",12,"Lederrüstung","2d8+2","9 m",[11,12,12,10,10,10],{senses:"passive Wahrnehmung 10",languages:"eine beliebige (meist Gemeinsprache)",cr:"1/8"},[],[mA("Krummsäbel","nah","+3","1,5 m","1d6+1","Hieb"),mA("Leichte Armbrust","fern","+3","24/96 m","1d8+1","Stich")]),
+ MON("Goblin","Klein","Humanoide (Goblinoide)","neutral böse",15,"Lederrüstung, Schild","2d6","9 m",[8,14,10,10,8,8],{skills:"Heimlichkeit +6",senses:"Dunkelsicht 18 m, passive Wahrnehmung 9",languages:"Gemeinsprache, Goblinisch",cr:"1/4"},[mT("Flinke Flucht","Kann in jedem seiner Züge die Aktionen Rückzug oder Verstecken als Bonusaktion ausführen.")],[mA("Krummsäbel","nah","+4","1,5 m","1d6+2","Hieb"),mA("Kurzbogen","fern","+4","24/96 m","1d6+2","Stich")]),
+ MON("Skelett","Mittelgroß","Untoter","rechtschaffen böse",13,"Rüstungsreste","2d8+4","9 m",[10,14,15,6,8,5],{vuln:"Wucht",immune:"Gift",condImm:"Erschöpft, Vergiftet",senses:"Dunkelsicht 18 m, passive Wahrnehmung 9",languages:"versteht die Sprachen, die es zu Lebzeiten kannte, kann aber nicht sprechen",cr:"1/4"},[],[mA("Kurzschwert","nah","+4","1,5 m","1d6+2","Stich"),mA("Kurzbogen","fern","+4","24/96 m","1d6+2","Stich")]),
+ MON("Zombie","Mittelgroß","Untoter","neutral böse",8,"","3d8+9","6 m",[13,6,16,3,6,5],{saves:"Weisheit +0",immune:"Gift",condImm:"Vergiftet",senses:"Dunkelsicht 18 m, passive Wahrnehmung 8",languages:"versteht die Sprachen, die er zu Lebzeiten kannte, kann aber nicht sprechen",cr:"1/4"},[mT("Untote Zähigkeit","Sinken die TP durch Schaden auf 0, Konstitutionsrettungswurf SG 5 + erlittener Schaden, außer der Schaden ist gleißend oder stammt von einem kritischen Treffer. Bei Erfolg sinken die TP stattdessen auf 1.")],[mA("Schlag","nah","+3","1,5 m","1d6+1","Wucht")]),
+ MON("Wolf","Mittelgroß","Tier","gesinnungslos",13,"natürliche Rüstung","2d8+2","12 m",[12,15,12,3,12,6],{skills:"Heimlichkeit +4, Wahrnehmung +3",senses:"passive Wahrnehmung 13",cr:"1/4"},[mT("Scharfes Gehör und scharfer Geruchssinn",KEEN),mT("Rudeltaktik",PACK)],[mA("Biss","nah","+4","1,5 m","2d4+2","Stich","Ist das Ziel eine Kreatur, muss ihm ein Stärkerettungswurf SG 11 gelingen, sonst wird es umgestoßen.")]),
+ MON("Ork","Mittelgroß","Humanoide (Ork)","chaotisch böse",13,"Fellrüstung","2d8+6","9 m",[16,12,16,7,11,10],{skills:"Einschüchtern +2",senses:"Dunkelsicht 18 m, passive Wahrnehmung 10",languages:"Gemeinsprache, Orkisch",cr:"1/2"},[mT("Aggressiv","Kann sich als Bonusaktion bis zu seiner Bewegungsrate auf eine feindliche Kreatur zubewegen, die er sehen kann.")],[mA("Zweihandaxt","nah","+5","1,5 m","1d12+3","Hieb"),mA("Wurfspeer","beides","+5","1,5 m oder 9/36 m","1d6+3","Stich")]),
+ MON("Hobgoblin","Mittelgroß","Humanoide (Goblinoide)","rechtschaffen böse",18,"Kettenpanzer, Schild","2d8+2","9 m",[13,12,12,10,10,9],{senses:"Dunkelsicht 18 m, passive Wahrnehmung 10",languages:"Gemeinsprache, Goblinisch",cr:"1/2"},[mT("Kampfvorteil","Einmal pro Zug zusätzlich 7 (2W6) Schaden gegen eine Kreatur, wenn ein kampffähiger Verbündeter innerhalb von 1,5 m von ihr ist.")],[mA("Langschwert","nah","+3","1,5 m","1d8+1","Hieb","oder 6 (1W10+1) Hiebschaden, wenn mit zwei Händen geführt"),mA("Langbogen","fern","+3","45/180 m","1d8+1","Stich")]),
+ MON("Grottenschrat","Mittelgroß","Humanoide (Goblinoide)","chaotisch böse",16,"Fellrüstung, Schild","5d8+5","9 m",[15,14,13,8,11,9],{skills:"Heimlichkeit +6, Überlebenskunst +2",senses:"Dunkelsicht 18 m, passive Wahrnehmung 10",languages:"Gemeinsprache, Goblinisch",cr:"1"},[mT("Rohling","Seine Nahkampfwaffen verursachen einen zusätzlichen Schadenswürfel (in den Angriffen schon eingerechnet)."),mT("Überraschungsangriff","Trifft er in der ersten Kampfrunde eine überraschte Kreatur, erleidet sie zusätzlich 7 (2W6) Schaden.")],[mA("Morgenstern","nah","+4","1,5 m","2d8+2","Stich"),mA("Wurfspeer","beides","+4","1,5 m oder 9/36 m","2d6+2","Stich","im Fernkampf 5 (1W6+2) Stichschaden")]),
+ MON("Ghul","Mittelgroß","Untoter","chaotisch böse",12,"","5d8","9 m",[13,15,10,7,10,6],{immune:"Gift",condImm:"Bezaubert, Erschöpft, Vergiftet",senses:"Dunkelsicht 18 m, passive Wahrnehmung 10",languages:"Gemeinsprache",cr:"1"},[],[mA("Biss","nah","+2","1,5 m","2d6+2","Stich"),mA("Klauen","nah","+4","1,5 m","2d4+2","Hieb","Ist das Ziel eine Kreatur, die weder Elf noch Untoter ist, muss ihm ein Konstitutionsrettungswurf SG 10 gelingen, sonst ist es 1 Minute gelähmt. Wiederholung am Ende jedes seiner Züge.")]),
+ MON("Riesenspinne","Groß","Tier","gesinnungslos",14,"natürliche Rüstung","4d10+4","9 m, Klettern 9 m",[14,16,12,2,11,4],{skills:"Heimlichkeit +7",senses:"Blindsicht 3 m, Dunkelsicht 18 m, passive Wahrnehmung 10",cr:"1"},[mT("Spinnenklettern","Klettert an schwierigen Oberflächen und kopfüber an Decken, ohne Attributswürfe."),mT("Netzgespür","Spürt bei Kontakt mit einem Netz die genaue Position jeder anderen Kreatur, die dasselbe Netz berührt."),mT("Netzläufer","Ignoriert Bewegungseinschränkungen durch Netze.")],[mA("Biss","nah","+5","1,5 m","1d8+3","Stich","Das Ziel muss einen Konstitutionsrettungswurf SG 11 machen: bei Misserfolg 9 (2W8) Giftschaden, bei Erfolg die Hälfte."),mA("Netz","fern","+5","9/18 m","","","","Bei einem Treffer ist das Ziel festgesetzt. Befreien als Aktion mit Stärkewurf SG 12. Das Netz hat RK 10 und 5 TP und ist anfällig gegen Feuer.","5–6")]),
+ MON("Banditenhauptmann","Mittelgroß","Humanoide (beliebiges Volk)","beliebig, nicht rechtschaffen",15,"beschlagenes Leder","10d8+20","9 m",[15,16,14,14,11,14],{saves:"Stärke +4, Geschicklichkeit +5, Weisheit +2",skills:"Athletik +4, Täuschen +4",senses:"passive Wahrnehmung 10",languages:"zwei beliebige",cr:"2"},[],[mA("Mehrfachangriff","sonst","","","","","","Drei Nahkampfangriffe: zwei mit dem Krummsäbel, einer mit dem Dolch. Oder zwei Fernkampfangriffe mit Dolchen."),mA("Krummsäbel","nah","+5","1,5 m","1d6+3","Hieb"),mA("Dolch","beides","+5","1,5 m oder 6/18 m","1d4+3","Stich")],{reactions:[mT("Parieren","+2 RK gegen einen Nahkampfangriff, der ihn treffen würde. Er muss den Angreifer sehen und eine Nahkampfwaffe führen.")]}),
+ MON("Oger","Groß","Riese","chaotisch böse",11,"Fellrüstung","7d10+21","12 m",[19,8,16,5,7,7],{senses:"Dunkelsicht 18 m, passive Wahrnehmung 8",languages:"Gemeinsprache, Riesisch",cr:"2"},[],[mA("Zweihandknüppel","nah","+6","1,5 m","2d8+4","Wucht"),mA("Wurfspeer","beides","+6","1,5 m oder 9/36 m","2d6+4","Stich")]),
+ MON("Eulenbär","Groß","Monstrosität","gesinnungslos",13,"natürliche Rüstung","7d10+21","12 m",[20,12,17,3,12,7],{skills:"Wahrnehmung +3",senses:"Dunkelsicht 18 m, passive Wahrnehmung 13",cr:"3"},[mT("Scharfe Sicht und scharfer Geruchssinn","Vorteil auf Weisheitswürfe (Wahrnehmung), die auf Sicht oder Geruch beruhen.")],[mA("Mehrfachangriff","sonst","","","","","","Zwei Angriffe: einer mit dem Schnabel, einer mit den Klauen."),mA("Schnabel","nah","+7","1,5 m","1d10+5","Stich"),mA("Klauen","nah","+7","1,5 m","2d8+5","Hieb")]),
+ MON("Troll","Groß","Riese","chaotisch böse",15,"natürliche Rüstung","8d10+40","9 m",[18,13,20,7,9,7],{skills:"Wahrnehmung +2",senses:"Dunkelsicht 18 m, passive Wahrnehmung 12",languages:"Riesisch",cr:"5"},[mT("Scharfer Geruchssinn","Vorteil auf Weisheitswürfe (Wahrnehmung), die auf Geruch beruhen."),mT("Regeneration","Erhält zu Beginn seines Zuges 10 TP zurück. Hat er seit seinem letzten Zug Säure- oder Feuerschaden erlitten, entfällt das in diesem Zug. Er stirbt nur, wenn er seinen Zug mit 0 TP beginnt und nicht regeneriert.")],[mA("Mehrfachangriff","sonst","","","","","","Drei Angriffe: einer mit dem Biss, zwei mit den Klauen."),mA("Biss","nah","+7","1,5 m","1d6+4","Stich"),mA("Klaue","nah","+7","1,5 m","2d6+4","Hieb")]),
+ MON("Höllenhund","Mittelgroß","Unhold","rechtschaffen böse",15,"natürliche Rüstung","7d8+14","15 m",[17,12,14,6,13,6],{skills:"Wahrnehmung +5",immune:"Feuer",senses:"Dunkelsicht 18 m, passive Wahrnehmung 15",languages:"versteht Infernalisch, kann aber nicht sprechen",cr:"3"},[mT("Scharfes Gehör und scharfer Geruchssinn",KEEN),mT("Rudeltaktik",PACK)],[mA("Biss","nah","+5","1,5 m","1d8+3","Stich","plus 7 (2W6) Feuerschaden"),mA("Feuerodem","sonst","","","","","","Kegel von 4,5 m. Geschicklichkeitsrettungswurf SG 12: bei Misserfolg 21 (6W6) Feuerschaden, bei Erfolg die Hälfte.","5–6")]),
+ MON("Nachtmahr","Groß","Unhold","neutral böse",13,"natürliche Rüstung","8d10+24","18 m, Fliegen 27 m",[18,15,16,10,13,15],{immune:"Feuer",senses:"passive Wahrnehmung 11",languages:"versteht Abyssisch, Gemeinsprache und Infernalisch, kann aber nicht sprechen",cr:"3"},[mT("Feuerresistenz verleihen","Kann jedem, der ihn reitet, Resistenz gegen Feuerschaden gewähren."),mT("Leuchten","Spendet helles Licht im Radius von 3 m und dämmriges Licht für weitere 3 m.")],[mA("Hufe","nah","+6","1,5 m","2d8+4","Wucht","plus 7 (2W6) Feuerschaden"),mA("Ätherischer Schritt","sonst","","","","","","Betritt mit bis zu drei bereitwilligen Kreaturen innerhalb von 1,5 m die Ätherebene oder kehrt von dort zurück.")]),
+ MON("Imp","Winzig","Unhold (Teufel, Gestaltwandler)","rechtschaffen böse",13,"","3d4+3","6 m, Fliegen 12 m",[6,17,13,11,12,14],{skills:"Heimlichkeit +5, Motiv erkennen +3, Täuschen +4, Überzeugen +4",resist:"Kälte; "+NONMAG,immune:"Feuer, Gift",condImm:"Vergiftet",senses:"Dunkelsicht 36 m, passive Wahrnehmung 11",languages:"Infernalisch, Gemeinsprache",cr:"1"},[mT("Gestaltwandler","Kann sich als Aktion in eine Ratte, einen Raben oder eine Spinne verwandeln oder zurück."),mT("Teufelssicht",DEVSIGHT),mT("Magieresistenz",MAGRES)],[mA("Stachel","nah","+5","1,5 m","1d4+3","Stich","Das Ziel muss einen Konstitutionsrettungswurf SG 11 machen: bei Misserfolg 10 (3W6) Giftschaden, bei Erfolg die Hälfte."),mA("Unsichtbarkeit","sonst","","","","","","Wird unsichtbar, bis er angreift oder seine Konzentration endet. Getragene Ausrüstung wird mit unsichtbar.")]),
+ MON("Bartteufel","Mittelgroß","Unhold (Teufel)","rechtschaffen böse",13,"natürliche Rüstung","8d8+16","9 m",[16,15,15,9,11,11],{saves:"Stärke +5, Konstitution +4, Weisheit +2",resist:"Kälte; "+NONMAG,immune:"Feuer, Gift",condImm:"Vergiftet",senses:"Dunkelsicht 36 m, passive Wahrnehmung 10",languages:"Infernalisch, Telepathie 36 m",cr:"3"},[mT("Teufelssicht",DEVSIGHT),mT("Magieresistenz",MAGRES),mT("Standhaft","Kann nicht verängstigt werden, solange ein verbündeter Teufel innerhalb von 9 m ist, den er sehen kann.")],[mA("Mehrfachangriff","sonst","","","","","","Zwei Angriffe: einer mit dem Bart, einer mit der Glefe."),mA("Bart","nah","+5","1,5 m","1d8+2","Stich","Ist das Ziel eine Kreatur, Konstitutionsrettungswurf SG 12, sonst 1 Minute vergiftet. Solange es vergiftet ist, kann es keine TP zurückerhalten. Wiederholung am Ende jedes seiner Züge."),mA("Glefe","nah","+5","3 m","1d10+3","Hieb","Ist das Ziel eine Kreatur, Konstitutionsrettungswurf SG 12, sonst infernalische Wunde: Es verliert zu Beginn jedes seiner Züge 5 (1W10) TP, bis Heilung oder ein Weisheitswurf (Heilkunde) SG 12 die Wunde schließt.")]),
+ MON("Magmamephit","Klein","Elementar","neutral böse",11,"","5d6+5","9 m, Fliegen 9 m",[8,12,12,7,10,10],{skills:"Heimlichkeit +3",vuln:"Kälte",immune:"Feuer, Gift",condImm:"Vergiftet",senses:"Dunkelsicht 18 m, passive Wahrnehmung 10",languages:"Ignal, Terral",cr:"1/2"},[mT("Todesexplosion","Stirbt er, explodiert er in einer Lavawolke: Geschicklichkeitsrettungswurf SG 11 für alle innerhalb von 1,5 m, bei Misserfolg 7 (2W6) Feuerschaden, bei Erfolg die Hälfte."),mT("Falsches Aussehen","Solange er sich nicht bewegt, ist er nicht von einem gewöhnlichen Haufen Magma zu unterscheiden."),mT("Angeborenes Zauberwirken (1/Tag)","Kann Metall erhitzen wirken (Zauber-SG 10), ohne Materialkomponenten.")],[mA("Klauen","nah","+3","1,5 m","1d4+1","Hieb","plus 2 (1W4) Feuerschaden"),mA("Feuerodem","sonst","","","","","","Kegel von 4,5 m. Geschicklichkeitsrettungswurf SG 11: bei Misserfolg 7 (2W6) Feuerschaden, bei Erfolg die Hälfte.","6")]),
+ MON("Schatten","Mittelgroß","Untoter","chaotisch böse",12,"","3d8+3","12 m",[6,14,13,6,10,8],{skills:"Heimlichkeit +4 (+6 in dämmrigem Licht oder Dunkelheit)",vuln:"Gleißend",resist:"Säure, Kälte, Feuer, Blitz, Schall; Wucht, Stich und Hieb durch nichtmagische Angriffe",immune:"Nekrotisch, Gift",condImm:"Erschöpft, Verängstigt, Gepackt, Gelähmt, Versteinert, Vergiftet, Liegend, Festgesetzt",senses:"Dunkelsicht 18 m, passive Wahrnehmung 10",cr:"1/2"},[mT("Amorph","Kann sich durch Lücken von 2,5 cm Breite bewegen."),mT("Schattenheimlichkeit","Kann sich in dämmrigem Licht oder Dunkelheit als Bonusaktion verstecken."),mT("Schwäche gegen Sonnenlicht","Im Sonnenlicht Nachteil auf Angriffswürfe, Attributswürfe und Rettungswürfe.")],[mA("Stärkeentzug","nah","+4","1,5 m","2d6+2","Nekrotisch","Die Stärke des Ziels sinkt um 1W4. Sinkt sie auf 0, stirbt das Ziel. Sonst endet die Senkung nach einer kurzen oder langen Rast.")]),
+ MON("Roter Drachennestling","Mittelgroß","Drache","chaotisch böse",17,"natürliche Rüstung","10d8+30","9 m, Klettern 9 m, Fliegen 18 m",[19,10,17,12,11,15],{saves:"Geschicklichkeit +2, Konstitution +5, Weisheit +2, Charisma +4",skills:"Heimlichkeit +2, Wahrnehmung +4",immune:"Feuer",senses:"Blindsicht 3 m, Dunkelsicht 18 m, passive Wahrnehmung 14",languages:"Drakonisch",cr:"4"},[],[mA("Biss","nah","+6","1,5 m","1d10+4","Stich","plus 3 (1W6) Feuerschaden"),mA("Feuerodem","sonst","","","","","","Kegel von 4,5 m. Geschicklichkeitsrettungswurf SG 13: bei Misserfolg 24 (7W6) Feuerschaden, bei Erfolg die Hälfte.","5–6")]),
 ];
 function newChar(npc){return{name:npc?"Neuer NSC":"Neuer Held",player:"",cls:"",race:"",level:1,background:"",align:"",isNpc:!!npc,
  ab:{str:10,dex:10,con:10,int:10,wis:10,cha:10},saves:{},skills:{},ac:10,hp:8,hpMax:8,hpTemp:0,speed:9,initExtra:0,hitDice:"1W8",
@@ -597,28 +646,28 @@ function setAdv(v){Dice.adv=v;$$("[data-adv]").forEach(b=>b.setAttribute("aria-p
 const DEL={};
 const DEF_COMBAT=()=>({round:1,turnId:null,list:[]});
 const DEF_SCREEN=()=>({mode:"title",title:"Willkommen am Tisch",subtitle:"Die Geschichte beginnt",mediaId:null,noteId:null,showInit:false,showGrid:false,roll:null});
-const S={mode:"init",db:null,assets:null,chars:new Map(),notes:new Map(),media:new Map(),sessions:new Map(),combat:DEF_COMBAT(),screen:DEF_SCREEN(),subs:[],pending:{}};
+const S={mode:"init",db:null,assets:null,chars:new Map(),notes:new Map(),media:new Map(),sessions:new Map(),monsters:new Map(),combat:DEF_COMBAT(),screen:DEF_SCREEN(),subs:[],pending:{}};
 function emit(what){S.subs.forEach(f=>{try{f(what)}catch(e){console.error(e)}})}
 let bc=null;try{bc=new BroadcastChannel("dungeon-zentrale")}catch{}
 const OFFLINE=!!window.LOK_OFFLINE;
 const APP_VERSION=window.LOK_VERSION||"online";
 const LDB={db:null,urls:new Map()};
-function ldbOpen(){return new Promise(res=>{try{const rq=indexedDB.open("lok-daten",2);rq.onupgradeneeded=()=>{const d=rq.result;["chars","notes","media","state","blobs","sessions"].forEach(n=>{if(!d.objectStoreNames.contains(n))d.createObjectStore(n)})};rq.onsuccess=()=>res(rq.result);rq.onerror=()=>res(null);rq.onblocked=()=>res(null)}catch{res(null)}})}
+function ldbOpen(){return new Promise(res=>{try{const rq=indexedDB.open("lok-daten",3);rq.onupgradeneeded=()=>{const d=rq.result;["chars","notes","media","state","blobs","sessions","monsters"].forEach(n=>{if(!d.objectStoreNames.contains(n))d.createObjectStore(n)})};rq.onsuccess=()=>res(rq.result);rq.onerror=()=>res(null);rq.onblocked=()=>res(null)}catch{res(null)}})}
 function ldbGet(st,k){return new Promise(res=>{try{const r=LDB.db.transaction(st).objectStore(st).get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>res(undefined)}catch{res(undefined)}})}
 function ldbWrite(st,k,v){return new Promise(res=>{try{const t=LDB.db.transaction(st,"readwrite");v===DEL?t.objectStore(st).delete(k):t.objectStore(st).put(v,k);t.oncomplete=()=>res(true);t.onerror=t.onabort=()=>res(false)}catch{res(false)}})}
 function ldbEntries(st){return new Promise(res=>{const out=[];try{const c=LDB.db.transaction(st).objectStore(st).openCursor();c.onsuccess=()=>{const cur=c.result;if(cur){out.push([String(cur.key),cur.value]);cur.continue()}else res(out)};c.onerror=()=>res(out)}catch{res(out)}})}
 async function loadBlobUrls(){if(!LDB.db)return;for(const m of S.media.values())if(m.blobId&&!LDB.urls.has(m.blobId)){const b=await ldbGet("blobs",m.blobId);if(b)LDB.urls.set(m.blobId,URL.createObjectURL(b))}}
 async function localLoadAll(){
   if(!LDB.db){S.chars=new Map();S.notes=new Map();S.media=new Map();S.combat=DEF_COMBAT();S.screen=DEF_SCREEN();return}
-  for(const col of ["chars","notes","media","sessions"])S[col]=new Map(await ldbEntries(col));
+  for(const col of ["chars","notes","media","sessions","monsters"])S[col]=new Map(await ldbEntries(col));
   const st=new Map(await ldbEntries("state"));S.combat=st.get("combat")||DEF_COMBAT();S.screen=st.get("screen")||DEF_SCREEN();
   await loadBlobUrls();
 }
 async function migrateOldLocal(){const o=lsGet("dz-data");if(!o||!LDB.db)return;if((await ldbEntries("chars")).length||(await ldbEntries("notes")).length)return;
-  for(const col of ["chars","notes","media","sessions"])for(const[k,v]of Object.entries(o[col]||{}))await ldbWrite(col,k,v);
+  for(const col of ["chars","notes","media","sessions","monsters"])for(const[k,v]of Object.entries(o[col]||{}))await ldbWrite(col,k,v);
   if(o.combat)await ldbWrite("state","combat",o.combat);if(o.screen)await ldbWrite("state","screen",o.screen);try{localStorage.removeItem("dz-data")}catch{}}
 async function localReload(path){
-  if(path==="*"){await localLoadAll();["chars","notes","media","sessions","combat","screen"].forEach(emit);return}
+  if(path==="*"){await localLoadAll();["chars","notes","media","sessions","monsters","combat","screen"].forEach(emit);return}
   const[col,id]=path.split("/");
   if(col==="state"){S[id]=(await ldbGet("state",id))||(id==="combat"?DEF_COMBAT():DEF_SCREEN());emit(id);return}
   const v=await ldbGet(col,id);if(v)S[col].set(id,v);else S[col].delete(id);if(col==="media")await loadBlobUrls();emit(col);
@@ -641,7 +690,7 @@ function put(col,id,obj){S[col].set(id,obj);emit(col);persist(col+"/"+id,obj)}
 function del(col,id){S[col].delete(id);emit(col);persist(col+"/"+id,DEL)}
 function setState(name,obj){S[name]=obj;emit(name);persist("state/"+name,obj)}
 function subscribeDb(){
-  for(const col of ["chars","notes","media","sessions"]){
+  for(const col of ["chars","notes","media","sessions","monsters"]){
     S.db.collection(col).onSnapshot(snap=>{
       let changed=false;
       for(const ch of snap.docChanges()){const id=ch.doc.id;if(S.pending[col+"/"+id])continue;
@@ -667,7 +716,7 @@ async function boot(){
     sync.title=OFFLINE?"Alles wird auf diesem Rechner gespeichert, auch ohne Internet. Lade ab und zu eine Sicherung herunter.":"Daten liegen nur in diesem Browser. Die Leinwand funktioniert in einem zweiten Fenster desselben Browsers.";
     if(!LDB.db)toast("Der Browser erlaubt hier keinen dauerhaften Speicher. Änderungen gehen beim Schließen verloren.");
     if(bc)bc.onmessage=e=>{const p=e.data&&e.data.path;if(p)localReload(p)};
-    ["chars","notes","media","sessions","combat","screen"].forEach(emit);}
+    ["chars","notes","media","sessions","monsters","combat","screen"].forEach(emit);}
 }
 
 /* ======================= Navigation ======================= */
@@ -846,16 +895,25 @@ function syncCombatFromChar(id,c){const cb=clone(S.combat);let ch=false;cb.list.
 S.subs.push(w=>{if(w==="chars"&&TAB==="chars")renderChars()});
 
 /* ======================= Initiative ======================= */
-const IN={open:null,addTab:"monster"};
+const IN={open:null,addTab:"monster",stat:null,statEdit:false,q:""};
 function sortedCombat(){return[...S.combat.list].sort((a,b)=>{const ai=a.init==null||a.init===""?-999:+a.init,bi=b.init==null||b.init===""?-999:+b.init;return bi-ai||num(b.initMod)-num(a.initMod)||String(a.name).localeCompare(b.name,"de")})}
 function nameTaken(base){const re=new RegExp("^"+base.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+" (\\d+)$");let mx=0;S.combat.list.forEach(c=>{const m=c.name.match(re);if(m)mx=Math.max(mx,+m[1]);else if(c.name===base)mx=Math.max(mx,1)});return mx}
-function addMonster(name,ac,hpExpr,initMod,count,rollHp){
-  const cb=clone(S.combat);let start=nameTaken(name);
-  for(let i=0;i<count;i++){const r=parseRoll(hpExpr);let hp=r?r.total:num(hpExpr,1);if(!rollHp){hp=avgDice(hpExpr)}
-    const nm=(count>1||start>0)?`${name} ${start+i+1}`:name;
-    cb.list.push({id:uid(),name:nm,kind:"monster",init:rnd(20)+num(initMod),initMod:num(initMod),hp:Math.max(1,hp),hpMax:Math.max(1,hp),hpTemp:0,ac:num(ac),conds:[],hidden:false})}
-  setState("combat",cb);
-}
+const SIZES=["Winzig","Klein","Mittelgroß","Groß","Riesig","Gigantisch"];
+const CRS=["0","1/8","1/4","1/2","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30"];
+const CRXP={"0":10,"1/8":25,"1/4":50,"1/2":100,"1":200,"2":450,"3":700,"4":1100,"5":1800,"6":2300,"7":2900,"8":3900,"9":5000,"10":5900,"11":7200,"12":8400,"13":10000,"14":11500,"15":13000,"16":15000,"17":18000,"18":20000,"19":22000,"20":25000,"21":33000,"22":41000,"23":50000,"24":62000,"25":75000,"26":90000,"27":105000,"28":120000,"29":135000,"30":155000};
+const crProf=cr=>{const v=cr==="1/8"||cr==="1/4"||cr==="1/2"?0:num(cr,0);return v<5?2:v<9?3:v<13?4:v<17?5:v<21?6:v<25?7:v<29?8:9};
+const DT={Hieb:"Hiebschaden",Stich:"Stichschaden",Wucht:"Wuchtschaden",Feuer:"Feuerschaden",Kälte:"Kälteschaden",Blitz:"Blitzschaden",Schall:"Schallschaden",Säure:"Säureschaden",Gift:"Giftschaden",Nekrotisch:"nekrotischer Schaden",Gleißend:"gleißender Schaden",Psychisch:"psychischer Schaden",Energie:"Energieschaden"};
+const ATYPE={nah:"Nahkampf-Waffenangriff",fern:"Fernkampf-Waffenangriff",beides:"Nah- oder Fernkampf-Waffenangriff",zauber:"Zauberangriff",sonst:"Sonstige Aktion"};
+function blankStat(){return{size:"Mittelgroß",type:"",align:"",acNote:"",hpDice:"",speed:"9 m",ab:{str:10,dex:10,con:10,int:10,wis:10,cha:10},saves:"",skills:"",vuln:"",resist:"",immune:"",condImm:"",senses:"",languages:"",cr:"",traits:[],actions:[],bonus:[],reactions:[],legendary:[]}}
+function statFromTpl(t){const st=Object.assign(blankStat(),clone(t));delete st.name;delete st.ac;return st}
+function allTemplates(){return[...MONSTERS.map((m,i)=>["srd:"+i,m,false]),...[...S.monsters.entries()].map(([id,m])=>["own:"+id,m,true])]}
+function getTemplate(key){if(key.startsWith("srd:"))return MONSTERS[+key.slice(4)];return S.monsters.get(key.slice(4))}
+function addFromTemplate(t,count,rollHp){const cb=clone(S.combat),start=nameTaken(t.name),ids=[];
+  for(let i=0;i<count;i++){const dice=t.hpDice||String(t.hp||1);const r=parseRoll(dice);let hp=rollHp&&r?r.total:(t.hpDice?avgDice(t.hpDice):num(t.hp,1));
+    const st=statFromTpl(t),im=mod(st.ab.dex),id=uid();ids.push(id);
+    cb.list.push({id,name:(count>1||start>0)?`${t.name} ${start+i+1}`:t.name,kind:"monster",init:rnd(20)+im,initMod:im,hp:Math.max(1,hp),hpMax:Math.max(1,hp),hpTemp:0,ac:num(t.ac,10),conds:[],hidden:false,st})}
+  setState("combat",cb);return ids}
+function addMonster(name,ac,hpExpr,initMod,count,rollHp){const st=blankStat();st.hpDice=hpExpr;st.ab.dex=10+2*num(initMod);return addFromTemplate(Object.assign(st,{name,ac:num(ac,10)}),count,rollHp)}
 function avgDice(e){const t=String(e).toLowerCase().replace(/\s/g,"").replace(/w/g,"d");const parts=t.match(/[+-]?[^+-]+/g)||[];let s=0;for(const p of parts){const g=p[0]==="-"?-1:1,q=p.replace(/^[+-]/,"");if(q.includes("d")){const[a,b]=q.split("d");s+=g*Math.floor((a?+a:1)*((+b+1)/2))}else s+=g*(+q||0)}return s}
 function addCharToCombat(id){const c=S.chars.get(id);if(!c)return;const cb=clone(S.combat);if(cb.list.some(x=>x.charId===id))return;
   cb.list.push({id:uid(),charId:id,name:c.name,kind:c.isNpc?"npc":"pc",init:null,initMod:mod(c.ab?.dex)+num(c.initExtra),hp:num(c.hp),hpMax:num(c.hpMax),hpTemp:num(c.hpTemp),ac:num(c.ac),conds:[],hidden:false});setState("combat",cb)}
@@ -880,18 +938,88 @@ function renderInit(){
     <h2 class="sec">Teilnehmer hinzufügen</h2>
     <button class="btn" data-ia="party" ${pcs.length?"":"disabled"}>Ganze Gruppe (${pcs.length})</button>
     <div class="row" style="gap:4px">${charSorted().map(([id,c])=>`<button class="chip" data-addchar="${id}" ${cb.list.some(x=>x.charId===id)?'disabled style="opacity:.4"':""}>+ ${esc(c.name)}</button>`).join("")}</div>
-    <div class="block-h"><span class="label">Monster (SRD)</span></div>
+    <div class="block-h"><span class="label">Gegner-Vorlagen</span></div>
     <div class="row"><span class="label">Anzahl</span><input type="number" id="mCount" value="1" min="1" max="20" style="width:64px"><label class="row faint" style="gap:4px;font-size:.85rem"><input type="checkbox" id="mRoll" checked style="width:auto">TP würfeln</label></div>
-    <div class="mlist">${MONSTERS.map((m,i)=>`<div class="mrow"><span>${m[0]} <span class="st">HG ${m[4]}</span></span><span class="st num">RK ${m[1]} · ${m[2]}</span><button class="btn sm" data-mon="${i}">+</button></div>`).join("")}</div>
+    <input id="mSearch" placeholder="Vorlage suchen …" aria-label="Vorlage suchen" value="${esc(IN.q||"")}">
+    <div class="mlist" id="mlist">${monListHtml()}</div>
     <div class="block-h"><span class="label">Eigener Gegner</span></div>
     <form id="customMon" class="block">
       <input id="cmName" placeholder="Name, z. B. Kultführer" required>
       <div class="row" style="flex-wrap:nowrap"><div class="field"><span class="label">RK</span><input id="cmAc" type="number" value="12"></div><div class="field"><span class="label">TP / Würfel</span><input id="cmHp" value="4d8+4"></div><div class="field"><span class="label">Init-Mod</span><input id="cmInit" type="number" value="1"></div></div>
       <button class="btn primary" type="submit">Hinzufügen</button>
     </form>
+    <p class="faint" style="font-size:.8rem;margin:0">Danach in der Kampfliste auf „Werte“ klicken, um Angriffe, Attribute und Fähigkeiten einzutragen.</p>
     <p class="attrib">Monsterwerte aus dem System Reference Document 5.1, CC-BY-4.0, Wizards of the Coast.</p>
   </div></div>`;
-  $("#customMon").onsubmit=e=>{e.preventDefault();const n=$("#cmName").value.trim();if(!n)return;addMonster(n,$("#cmAc").value,$("#cmHp").value,$("#cmInit").value,Math.max(1,num($("#mCount").value,1)),$("#mRoll").checked)};
+  $("#customMon").onsubmit=e=>{e.preventDefault();const n=$("#cmName").value.trim();if(!n)return;const ids=addMonster(n,$("#cmAc").value,$("#cmHp").value,$("#cmInit").value,Math.max(1,num($("#mCount").value,1)),$("#mRoll").checked);IN.stat=ids[0];IN.statEdit=true;renderInit()};
+  $("#mSearch").oninput=e=>{IN.q=e.target.value;$("#mlist").innerHTML=monListHtml()};
+}
+function monListHtml(){const q=(IN.q||"").toLowerCase().trim();const L=allTemplates().filter(([,m])=>!q||m.name.toLowerCase().includes(q)).sort((a,b)=>(b[2]-a[2])||a[1].name.localeCompare(b[1].name,"de"));
+  return L.map(([k,m,own])=>`<div class="mrow"><span>${esc(m.name)} <span class="st">HG ${esc(m.cr||"?")}${own?" · eigene":""}</span></span><span class="st num">RK ${num(m.ac)} · ${esc(m.hpDice||m.hp||"")}</span><span class="row" style="gap:2px;flex-wrap:nowrap"><button class="btn sm" data-mon="${k}" aria-label="${esc(m.name)} hinzufügen">+</button>${own?`<button class="btn ghost sm danger" data-mondel="${k.slice(4)}" aria-label="Vorlage löschen">×</button>`:""}</span></div>`).join("")||`<div class="faint" style="padding:8px;font-size:.85rem">Keine Vorlage gefunden.</div>`}
+const dW=t=>String(t||"").replace(/d/g,"W");
+function hitNum(h){return parseInt(String(h||"0").replace("−","-").replace("+",""),10)||0}
+function extraDice(x){const m=String(x||"").match(/^plus\s+\d+\s*\((\d+[dW]\d+(?:\s*[+-]\s*\d+)?)\)/i);return m?m[1].replace(/W/g,"d").replace(/\s/g,""):""}
+function statViewHtml(c){const st=Object.assign(blankStat(),c.st||{}),ab=st.ab;
+  const prop=(l,v)=>v?`<div class="st-p"><b>${l}</b> ${esc(v)}</div>`:"";
+  const named=(l,list)=>list&&list.length?`<h4>${l}</h4>${list.map(x=>`<p class="st-act"><b>${esc(x.n)}.</b> ${esc(x.t)}</p>`).join("")}`:"";
+  const acts=(st.actions||[]).map((a,i)=>{const atk=a.type&&a.type!=="sonst";const avg=a.dmg?avgDice(a.dmg):0;
+    return`<p class="st-act"><b>${esc(a.n||"Aktion")}${a.recharge?` (Aufladung ${esc(a.recharge)})`:""}.</b> ${atk?`<i>${ATYPE[a.type]||""}:</i> ${esc(a.hit||"+0")} auf Treffer${a.reach?`, Reichweite ${esc(a.reach)}`:""}, ein Ziel. ${a.dmg?`<i>Treffer:</i> ${avg} (${esc(dW(a.dmg))}) ${esc(DT[a.dtype]||a.dtype||"Schaden")}${a.extra?" "+esc(a.extra):""}.`:""}`:""} ${esc(a.t||"")}
+      <span class="st-roll">${atk?`<button class="btn sm" data-st="atk:${i}">W20 ${esc(a.hit||"+0")}</button>`:""}${a.dmg?`<button class="btn sm" data-st="dmg:${i}">Schaden</button>`:""}${a.recharge?`<button class="btn sm" data-st="rech:${i}">Aufladen W6</button>`:""}</span></p>`}).join("");
+  const xp=CRXP[st.cr];
+  return`<div class="stat"><div class="row"><div style="flex:1;min-width:0"><div class="st-name">${esc(c.name)}</div><div class="st-sub">${esc([st.size,st.type].filter(Boolean).join(" "))}${st.align?", "+esc(st.align):""}</div></div><button class="btn sm" data-st="edit">Bearbeiten</button><button class="btn ghost sm" data-st="tpl" title="Als Vorlage speichern, um diesen Gegner wiederzuverwenden">Als Vorlage</button></div>
+   <div class="st-rule"></div>
+   <div class="st-p"><b>Rüstungsklasse</b> ${num(c.ac)}${st.acNote?` (${esc(st.acNote)})`:""}</div>
+   <div class="st-p"><b>Trefferpunkte</b> ${num(c.hpMax)}${st.hpDice?` (${esc(dW(st.hpDice))})`:""}</div>
+   <div class="st-p"><b>Bewegungsrate</b> ${esc(st.speed||"–")}</div>
+   <div class="st-rule"></div>
+   <div class="st-ab">${ABILS.map(([k,sh,l])=>`<button data-st="abil:${k}" title="${l}-Wurf"><span class="k">${sh}</span>${num(ab[k],10)} (${sg(mod(ab[k]))})</button>`).join("")}</div>
+   <div class="st-rule"></div>
+   ${prop("Rettungswürfe",st.saves)}${prop("Fertigkeiten",st.skills)}${prop("Schadensanfälligkeiten",st.vuln)}${prop("Schadensresistenzen",st.resist)}${prop("Schadensimmunitäten",st.immune)}${prop("Zustandsimmunitäten",st.condImm)}${prop("Sinne",st.senses)}${prop("Sprachen",st.languages)}
+   ${st.cr?`<div class="st-p"><b>Herausforderung</b> ${esc(st.cr)}${xp?` (${xp.toLocaleString("de-DE")} EP)`:""} · Übungsbonus +${crProf(st.cr)}</div>`:""}
+   ${named("Merkmale",st.traits)}
+   ${acts?`<h4>Aktionen</h4>${acts}`:`<p class="faint" style="margin:4px 0 0">Noch keine Angriffe eingetragen. Klick auf „Bearbeiten“.</p>`}
+   ${named("Bonusaktionen",st.bonus)}${named("Reaktionen",st.reactions)}${named("Legendäre Aktionen",st.legendary)}
+  </div>`}
+function statEditHtml(c){const st=Object.assign(blankStat(),c.st||{});
+  const fld=(l,path,val,w)=>`<div class="field"${w?` style="grid-column:span ${w}"`:""}><span class="label">${l}</span><input data-sf="${path}" value="${esc(val||"")}"></div>`;
+  const named=(key,l,list,btn)=>`<h4>${l}<button class="btn ghost sm" data-st="add:${key}">+ ${btn}</button></h4>${(list||[]).map((x,i)=>`<div class="ste-item"><div class="block"><input data-sf="${key}.${i}.n" value="${esc(x.n)}" placeholder="Name" aria-label="Name"><textarea data-sf="${key}.${i}.t" placeholder="Beschreibung" aria-label="Beschreibung">${esc(x.t)}</textarea></div><button class="btn ghost sm danger" data-st="del:${key}:${i}" aria-label="Entfernen">×</button></div>`).join("")}`;
+  const dts=Object.keys(DT);
+  const acts=(st.actions||[]).map((a,i)=>`<div class="ste-item"><div class="block">
+     <div class="ste-atk"><div class="field"><span class="label">Name</span><input data-sf="actions.${i}.n" value="${esc(a.n)}"></div>
+      <div class="field"><span class="label">Art</span><select data-sf="actions.${i}.type">${Object.entries(ATYPE).map(([k,l])=>`<option value="${k}" ${a.type===k?"selected":""}>${l}</option>`).join("")}</select></div>
+      <div class="field"><span class="label">Bonus</span><input data-sf="actions.${i}.hit" value="${esc(a.hit)}" placeholder="+4"></div>
+      <div class="field"><span class="label">Reichweite</span><input data-sf="actions.${i}.reach" value="${esc(a.reach)}" placeholder="1,5 m"></div>
+      <div class="field"><span class="label">Schaden</span><input data-sf="actions.${i}.dmg" value="${esc(a.dmg)}" placeholder="1d6+2"></div>
+      <div class="field"><span class="label">Schadensart</span><select data-sf="actions.${i}.dtype"><option value="">–</option>${dts.map(k=>`<option ${a.dtype===k?"selected":""}>${k}</option>`).join("")}</select></div></div>
+     <div class="ste-atk2"><div class="field"><span class="label">Zusatz (z. B. „plus 7 (2W6) Feuerschaden“ oder ein Effekt)</span><input data-sf="actions.${i}.extra" value="${esc(a.extra)}"></div><div class="field"><span class="label">Aufladung</span><input data-sf="actions.${i}.recharge" value="${esc(a.recharge)}" placeholder="5–6"></div></div>
+     <div class="field"><span class="label">Beschreibung (für Mehrfachangriff, Odem und Ähnliches)</span><textarea data-sf="actions.${i}.t">${esc(a.t)}</textarea></div></div>
+     <button class="btn ghost sm danger" data-st="del:actions:${i}" aria-label="Aktion entfernen">×</button></div>`).join("");
+  return`<div class="stat ste"><div class="row"><span class="st-name" style="flex:1">Werte bearbeiten</span><button class="btn primary sm" data-st="done">Fertig</button></div>
+   <div class="ste-grid"><div class="field" style="grid-column:span 2"><span class="label">Name</span><input data-sx="name" value="${esc(c.name)}"></div>
+    <div class="field"><span class="label">Größe</span><select data-sf="size">${SIZES.map(z=>`<option ${st.size===z?"selected":""}>${z}</option>`).join("")}</select></div>
+    ${fld("Typ","type",st.type)}${fld("Gesinnung","align",st.align)}
+    <div class="field"><span class="label">Herausforderung</span><select data-sf="cr"><option value="">–</option>${CRS.map(z=>`<option ${st.cr===z?"selected":""}>${z}</option>`).join("")}</select></div>
+    <div class="field"><span class="label">Rüstungsklasse</span><input type="number" data-sx="ac" value="${num(c.ac)}"></div>${fld("Rüstung","acNote",st.acNote)}
+    <div class="field"><span class="label">TP-Würfel</span><div class="row" style="flex-wrap:nowrap;gap:4px"><input data-sf="hpDice" value="${esc(st.hpDice)}" placeholder="2d8+2"><button class="btn sm" data-st="hpset" title="Trefferpunkte aus den Würfeln neu setzen (Durchschnitt)">Setzen</button></div></div>
+    ${fld("Bewegungsrate","speed",st.speed)}</div>
+   <div class="ste-ab">${ABILS.map(([k,sh,l])=>`<div class="field"><span class="label">${sh}</span><input type="number" data-sf="ab.${k}" data-num value="${num(st.ab[k],10)}" aria-label="${l}"></div>`).join("")}</div>
+   <div class="ste-grid">${fld("Rettungswürfe","saves",st.saves,2)}${fld("Fertigkeiten","skills",st.skills,2)}${fld("Schadensanfälligkeiten","vuln",st.vuln,2)}${fld("Schadensresistenzen","resist",st.resist,2)}${fld("Schadensimmunitäten","immune",st.immune,2)}${fld("Zustandsimmunitäten","condImm",st.condImm,2)}${fld("Sinne","senses",st.senses,2)}${fld("Sprachen","languages",st.languages,2)}</div>
+   ${named("traits","Merkmale",st.traits,"Merkmal")}
+   <h4>Aktionen<button class="btn ghost sm" data-st="add:actions">+ Angriff</button><button class="btn ghost sm" data-st="add:actionsT">+ Sonstige Aktion</button></h4>${acts}
+   ${named("bonus","Bonusaktionen",st.bonus,"Bonusaktion")}${named("reactions","Reaktionen",st.reactions,"Reaktion")}${named("legendary","Legendäre Aktionen",st.legendary,"Legendäre Aktion")}
+   <div class="row"><span class="spacer"></span><button class="btn primary sm" data-st="done">Fertig</button></div></div>`}
+function baseName(n){return String(n||"").replace(/\s+\d+$/,"")}
+function statAction(id,act,btn){const cb=clone(S.combat),x=cb.list.find(c=>c.id===id);if(!x)return;x.st=Object.assign(blankStat(),x.st||{});const st=x.st;const [k,a,b]=act.split(":");
+  if(k==="edit"){IN.statEdit=true;renderInit();return}
+  if(k==="done"){IN.statEdit=false;persist("state/combat",S.combat);renderInit();return}
+  if(k==="abil"){const ab=ABILS.find(z=>z[0]===a);d20(`${x.name}: ${ab[2]}`,mod(st.ab[a]));return}
+  if(k==="atk"){const t=st.actions[+a];d20(`${x.name}: ${t.n||"Angriff"}`,hitNum(t.hit));return}
+  if(k==="dmg"){const t=st.actions[+a];const ex=extraDice(t.extra);rollExpr(`${x.name}: ${t.n||"Angriff"} Schaden${ex?" (inkl. Zusatz)":""}`,(t.dmg||"0")+(ex?"+"+ex:""));return}
+  if(k==="rech"){const t=st.actions[+a];const r=rnd(6),need=num(String(t.recharge||"6").split(/[–-]/)[0],6);pushRoll({label:`${x.name}: ${t.n} aufladen (${t.recharge})`,total:r,detail:r>=need?"aufgeladen, einsatzbereit":"noch nicht bereit",crit:null});return}
+  if(k==="hpset"){const v=avgDice(st.hpDice||"1");x.hp=Math.max(1,v);x.hpMax=Math.max(1,v);setState("combat",cb);return}
+  if(k==="add"){if(a==="actions")st.actions.push(mA("","nah","+0","1,5 m","1d6","Hieb"));else if(a==="actionsT")st.actions.push(mA("","sonst"));else st[a]=[...(st[a]||[]),mT("","")];setState("combat",cb);return}
+  if(k==="del"){if(!btn.classList.contains("armed")){btn.classList.add("armed");btn.textContent="?";setTimeout(()=>{btn.classList.remove("armed");btn.textContent="×"},2500);return}st[a].splice(+b,1);setState("combat",cb);return}
+  if(k==="tpl"){const t=Object.assign(clone(st),{name:baseName(x.name),ac:num(x.ac,10)});if(!t.hpDice)t.hp=x.hpMax;const ex=[...S.monsters.entries()].find(([,m])=>m.name===t.name);put("monsters",ex?ex[0]:uid(),t);toast(`„${t.name}“ ist jetzt eine Vorlage. Du findest sie oben in der Vorlagenliste.`);$("#toast").style.background="var(--moss)";setTimeout(()=>$("#toast").style.background="",4600);return}
 }
 function cbtRow(c,cb){
   const turn=cb.turnId===c.id,down=c.hp<=0,pct=c.hpMax?Math.max(0,Math.min(100,c.hp/c.hpMax*100)):0;
@@ -904,8 +1032,9 @@ function cbtRow(c,cb){
    <div class="hpctl"><div class="nums num">${num(c.hp)}<small>/ ${num(c.hpMax)} TP${num(c.hpTemp)?` · +${num(c.hpTemp)} temp`:""}</small></div>
      <div class="hpbar" style="margin:0"><i class="${hpClass(c)}" style="width:${pct}%"></i></div>
      <div class="act"><input type="number" data-amt placeholder="Wert" aria-label="Wert"><button class="btn dmg sm" data-cact="dmg">Schaden</button><button class="btn heal sm" data-cact="heal">Heilen</button></div></div>
-   <div class="tools"><button class="btn ghost sm" data-cact="conds" aria-expanded="${IN.open===c.id}" title="Zustände">Zust.</button><button class="btn ghost sm" data-cact="hide" title="Vor der Leinwand verbergen">${c.hidden?"Zeigen":"Verb."}</button><button class="btn ghost sm" data-cact="rm" aria-label="Entfernen">×</button></div>
+   <div class="tools">${c.charId?`<button class="btn ghost sm" data-cact="sheet" title="Charakterbogen öffnen">Bogen</button>`:`<button class="btn ghost sm" data-cact="stat" aria-expanded="${IN.stat===c.id}" title="Werte, Angriffe und Fähigkeiten">Werte</button>`}<button class="btn ghost sm" data-cact="conds" aria-expanded="${IN.open===c.id}" title="Zustände">Zust.</button><button class="btn ghost sm" data-cact="hide" title="Vor der Leinwand verbergen">${c.hidden?"Zeigen":"Verb."}</button><button class="btn ghost sm" data-cact="rm" aria-label="Entfernen">×</button></div>
    ${IN.open===c.id?`<div class="cond-pop">${CONDS.map(n=>`<button class="chip ${c.conds.includes(n)?"on":""}" data-ccond="${esc(n)}">${n}</button>`).join("")}</div>`:""}
+   ${IN.stat===c.id&&!c.charId?(IN.statEdit?statEditHtml(c):statViewHtml(c)):""}
   </div>`;
 }
 $("#v-init").addEventListener("click",e=>{
@@ -922,19 +1051,27 @@ $("#v-init").addEventListener("click",e=>{
     if(a==="screen"){setState("screen",Object.assign({},S.screen,{showInit:!S.screen.showInit}))}
     return}
   if(b.dataset.addchar){addCharToCombat(b.dataset.addchar);return}
-  if(b.dataset.mon!=null){const m=MONSTERS[+b.dataset.mon];addMonster(m[0],m[1],m[2],m[3],Math.max(1,num($("#mCount").value,1)),$("#mRoll").checked);return}
+  if(b.dataset.mon!=null){const t=getTemplate(b.dataset.mon);if(t)addFromTemplate(t,Math.max(1,num($("#mCount").value,1)),$("#mRoll").checked);return}
+  if(b.dataset.mondel){if(!b.classList.contains("armed")){b.classList.add("armed");b.textContent="Löschen?";setTimeout(()=>{b.classList.remove("armed");b.textContent="×"},3000);return}del("monsters",b.dataset.mondel);return}
   const row=b.closest(".cbt");if(!row)return;const id=row.dataset.cid;
   if(b.dataset.cact==="dmg"||b.dataset.cact==="heal"){const v=num(row.querySelector("[data-amt]").value,0);if(!v)return;updC(id,x=>applyDamage(x,b.dataset.cact==="dmg"?v:-v));return}
   if(b.dataset.cact==="conds"){IN.open=IN.open===id?null:id;renderInit();return}
+  if(b.dataset.cact==="stat"){if(IN.stat===id){IN.stat=null;IN.statEdit=false}else{IN.stat=id;IN.statEdit=false}renderInit();return}
+  if(b.dataset.cact==="sheet"){const x=S.combat.list.find(c=>c.id===id);if(x&&x.charId){flushChar();CH.sel=x.charId;lsSet("dz-csel",x.charId);CH.work=null;showTab("chars")}return}
+  if(b.dataset.st){statAction(id,b.dataset.st,b);return}
   if(b.dataset.cact==="hide"){updC(id,x=>x.hidden=!x.hidden);return}
   if(b.dataset.cact==="rm"){const cb=clone(S.combat);cb.list=cb.list.filter(c=>c.id!==id);if(cb.turnId===id)cb.turnId=null;setState("combat",cb);return}
   if(b.dataset.ccond){const n=b.dataset.ccond;updC(id,x=>x.conds=x.conds.includes(n)?x.conds.filter(y=>y!==n):[...x.conds,n]);return}
 });
 $("#v-init").addEventListener("change",e=>{const t=e.target,row=t.closest(".cbt");if(!row||!t.dataset.cf)return;
   const v=t.value===""?null:num(t.value);const cb=clone(S.combat);const x=cb.list.find(c=>c.id===row.dataset.cid);if(!x)return;x[t.dataset.cf]=v;setState("combat",cb)});
+const saveStatSoon=debounce(()=>{persist("state/combat",S.combat);if(PV.on)renderPlayer(false)},500);
+$("#v-init").addEventListener("input",e=>{const t=e.target;if(t.dataset.sf==null&&t.dataset.sx==null)return;const row=t.closest(".cbt");if(!row)return;const x=S.combat.list.find(c=>c.id===row.dataset.cid);if(!x)return;
+  if(t.dataset.sx!=null){const k=t.dataset.sx;x[k]=k==="name"?t.value:num(t.value,0);if(k==="name")row.querySelector(".who .n span").textContent=t.value;saveStatSoon();return}
+  x.st=x.st||blankStat();let v=t.value;if(t.dataset.num!=null)v=num(v,10);setPath(x.st,t.dataset.sf,v);if(t.dataset.sf==="ab.dex")x.initMod=mod(v);saveStatSoon()});
 $("#v-init").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("[data-amt]")){e.preventDefault();e.target.parentElement.querySelector('[data-cact="dmg"]').click()}});
 $("#v-init").addEventListener("focusout",()=>setTimeout(()=>{if(initPendingRender&&!isEditing($("#v-init")))renderInit()},0));
-S.subs.push(w=>{if((w==="combat"||w==="chars"||w==="screen")&&TAB==="init")renderInit()});
+S.subs.push(w=>{if((w==="combat"||w==="chars"||w==="screen")&&TAB==="init")renderInit();if(w==="monsters"&&TAB==="init"&&$("#mlist"))$("#mlist").innerHTML=monListHtml()});
 
 /* ======================= Sessions ======================= */
 const SE={sel:lsGet("dz-ssel"),edit:false,work:null,dirty:0,open:null,me:lsGet("dz-me")||""};
@@ -1421,7 +1558,7 @@ async function dataURLToBlob(d){return await (await fetch(d)).blob()}
 async function exportData(){
   flushChar();flushNote();flushSess();const btn=$("#exportBtn");btn.disabled=true;btn.textContent="Wird vorbereitet …";
   try{
-    const out={app:"logbuch-der-lok",format:1,exported:new Date().toISOString(),chars:Object.fromEntries(S.chars),notes:Object.fromEntries(S.notes),sessions:Object.fromEntries(S.sessions),media:{},combat:S.combat,screen:S.screen,blobs:{}};
+    const out={app:"logbuch-der-lok",format:1,exported:new Date().toISOString(),chars:Object.fromEntries(S.chars),notes:Object.fromEntries(S.notes),sessions:Object.fromEntries(S.sessions),monsters:Object.fromEntries(S.monsters),media:{},combat:S.combat,screen:S.screen,blobs:{}};
     for(const[id,m]of S.media){const mm=clone(m);let blob=null;
       try{if(m.assetId)blob=await (await fetch("/_blob/"+m.assetId)).blob();else if(m.blobId&&LDB.db)blob=await ldbGet("blobs",m.blobId)}catch{}
       if(blob){const key=m.assetId||m.blobId;out.blobs[key]=await blobToDataURL(blob);mm.blobId=key;delete mm.assetId}
@@ -1438,7 +1575,7 @@ async function importData(file){
   if(!o||o.app!=="logbuch-der-lok"){toast("Diese Datei ist keine Sicherung des Logbuchs der Lok.");return}
   if(!LDB.db){toast("Ohne dauerhaften Speicher kann keine Sicherung eingespielt werden.");return}
   for(const[k,d]of Object.entries(o.blobs||{})){try{await ldbWrite("blobs",k,await dataURLToBlob(d))}catch{}}
-  for(const col of ["chars","notes","media","sessions"])for(const[k,v]of Object.entries(o[col]||{}))await ldbWrite(col,k,v);
+  for(const col of ["chars","notes","media","sessions","monsters"])for(const[k,v]of Object.entries(o[col]||{}))await ldbWrite(col,k,v);
   for(const[k,pt]of Object.entries(o.mediaPatch||{})){const cur=await ldbGet("media",k);if(cur)await ldbWrite("media",k,Object.assign(cur,pt))}
   if(o.combat)await ldbWrite("state","combat",o.combat);if(o.screen)await ldbWrite("state","screen",o.screen);
   CH.work=null;SE.work=null;NT.work=null;await localReload("*");try{bc&&bc.postMessage({path:"*"})}catch{}
