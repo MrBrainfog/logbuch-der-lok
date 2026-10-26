@@ -5,7 +5,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.LOK_OFFLINE=true;window.LOK_VERSION="2026.10.26-1733";</script>
+<script>window.LOK_OFFLINE=true;window.LOK_VERSION="2026.10.26-1735";</script>
 </head><body>
 <title>Logbuch der Lok</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -328,7 +328,7 @@ h2.sec{font-family:var(--f-display);font-weight:400;font-size:1.28rem;margin:0;l
 .lb-what{font-family:var(--f-display);font-size:1.05rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46ch}
 .lb-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
 .lb-strip .sthumb{flex:0 0 132px}
-.lb-strip .sthumb.live::after{content:"Live · nochmal klicken zum Ausblenden";position:absolute;left:0;right:0;top:0;font-size:.62rem;font-weight:700;letter-spacing:.04em;background:var(--arcane);color:#061416;padding:1px 5px;border-radius:5px 5px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-strip .sthumb.live::after{content:"Live";position:absolute;left:0;right:0;top:0;font-size:.62rem;font-weight:700;letter-spacing:.04em;background:var(--arcane);color:#061416;padding:1px 5px;border-radius:5px 5px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lb-empty{font-size:.85rem;color:var(--fg-dim);padding:4px 0}
 @media (max-width:600px){.lb-what{max-width:20ch}}
 
@@ -1021,7 +1021,7 @@ function updateLivebar(){const bar=$("#livebar");if(!bar)return;const show=TAB==
   $("#lbFold").setAttribute("aria-expanded",String(!LB2.fold));$("#lbFold").textContent=LB2.fold?"Bilder zeigen":"Bilder ausblenden";
   const strip=$("#lbStrip");strip.hidden=LB2.fold;
   if(!LB2.fold){const med=sessMedia(SE.sel),liveId=(S.screen.mode==="image"||S.screen.mode==="map")?S.screen.mediaId:null;
-    strip.innerHTML=med.length?med.map(([id,m])=>`<button class="sthumb ${liveId===id?"live":""}" data-lbshow="${id}" style="background-image:url('${esc(mediaSrc(m))}')" title="${esc(m.name)}" aria-pressed="${liveId===id}"><span>${esc(m.name)}</span></button>`).join("")
+    strip.innerHTML=med.length?med.map(([id,m])=>`<button class="sthumb ${liveId===id?"live":""}" data-lbshow="${id}" style="background-image:url('${esc(mediaSrc(m))}')" title="${esc(m.name)}${liveId===id?' · nochmal klicken zum Ausblenden':''}" aria-pressed="${liveId===id}"><span>${esc(m.name)}</span></button>`).join("")
       :`<div class="lb-empty">Diese Session hat noch keine Bilder. Ordne sie in der Leinwand über die Auswahl unter jedem Bild zu.</div>`}
   requestAnimationFrame(()=>{mainEl.style.paddingBottom=(bar.offsetHeight+24)+"px"})}
 $("#livebar").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
